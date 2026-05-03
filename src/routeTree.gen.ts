@@ -18,8 +18,10 @@ import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
+import { Route as AuthenticatedSchuzkyIndexRouteImport } from './routes/_authenticated/schuzky.index'
 import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
 import { Route as AuthenticatedSchuzkyNovaRouteImport } from './routes/_authenticated/schuzky.nova'
+import { Route as AuthenticatedSchuzkyIdRouteImport } from './routes/_authenticated/schuzky.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -65,6 +67,12 @@ const AdminWorkspacesIndexRoute = AdminWorkspacesIndexRouteImport.update({
   path: '/workspaces/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AuthenticatedSchuzkyIndexRoute =
+  AuthenticatedSchuzkyIndexRouteImport.update({
+    id: '/schuzky/',
+    path: '/schuzky/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AdminWorkspacesIdRoute = AdminWorkspacesIdRouteImport.update({
   id: '/workspaces/$id',
   path: '/workspaces/$id',
@@ -76,6 +84,11 @@ const AuthenticatedSchuzkyNovaRoute =
     path: '/schuzky/nova',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSchuzkyIdRoute = AuthenticatedSchuzkyIdRouteImport.update({
+  id: '/schuzky/$id',
+  path: '/schuzky/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -85,8 +98,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
+  '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -96,8 +111,10 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin': typeof AdminIndexRoute
+  '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/schuzky': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRoutesById {
@@ -110,8 +127,10 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/_authenticated/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/_authenticated/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRouteTypes {
@@ -124,8 +143,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/admin/templates'
     | '/admin/'
+    | '/schuzky/$id'
     | '/schuzky/nova'
     | '/admin/workspaces/$id'
+    | '/schuzky/'
     | '/admin/workspaces/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -135,8 +156,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/admin/templates'
     | '/admin'
+    | '/schuzky/$id'
     | '/schuzky/nova'
     | '/admin/workspaces/$id'
+    | '/schuzky'
     | '/admin/workspaces'
   id:
     | '__root__'
@@ -148,8 +171,10 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/admin/templates'
     | '/admin/'
+    | '/_authenticated/schuzky/$id'
     | '/_authenticated/schuzky/nova'
     | '/admin/workspaces/$id'
+    | '/_authenticated/schuzky/'
     | '/admin/workspaces/'
   fileRoutesById: FileRoutesById
 }
@@ -225,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWorkspacesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_authenticated/schuzky/': {
+      id: '/_authenticated/schuzky/'
+      path: '/schuzky'
+      fullPath: '/schuzky/'
+      preLoaderRoute: typeof AuthenticatedSchuzkyIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/admin/workspaces/$id': {
       id: '/admin/workspaces/$id'
       path: '/workspaces/$id'
@@ -239,19 +271,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSchuzkyNovaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/schuzky/$id': {
+      id: '/_authenticated/schuzky/$id'
+      path: '/schuzky/$id'
+      fullPath: '/schuzky/$id'
+      preLoaderRoute: typeof AuthenticatedSchuzkyIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSchuzkyIdRoute: typeof AuthenticatedSchuzkyIdRoute
   AuthenticatedSchuzkyNovaRoute: typeof AuthenticatedSchuzkyNovaRoute
+  AuthenticatedSchuzkyIndexRoute: typeof AuthenticatedSchuzkyIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSchuzkyIdRoute: AuthenticatedSchuzkyIdRoute,
   AuthenticatedSchuzkyNovaRoute: AuthenticatedSchuzkyNovaRoute,
+  AuthenticatedSchuzkyIndexRoute: AuthenticatedSchuzkyIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -283,3 +326,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
