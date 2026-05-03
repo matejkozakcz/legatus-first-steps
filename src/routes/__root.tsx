@@ -1,4 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -74,14 +76,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <AuthProvider>
-      <WorkspaceProvider>
-        <ImpersonationProvider>
-          <ImpersonationBanner />
-          <Outlet />
-        </ImpersonationProvider>
-      </WorkspaceProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <ImpersonationProvider>
+            <ImpersonationBanner />
+            <Outlet />
+          </ImpersonationProvider>
+        </WorkspaceProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
