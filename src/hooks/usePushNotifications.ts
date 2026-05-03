@@ -94,9 +94,13 @@ export function usePushNotifications() {
       await navigator.serviceWorker.ready;
 
       const { publicKey } = await getPublicKeyFn();
+      const keyBytes = urlBase64ToUint8Array(publicKey);
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
+        applicationServerKey: keyBytes.buffer.slice(
+          keyBytes.byteOffset,
+          keyBytes.byteOffset + keyBytes.byteLength,
+        ) as ArrayBuffer,
       });
 
       await saveFn({
