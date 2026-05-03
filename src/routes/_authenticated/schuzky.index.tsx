@@ -88,7 +88,7 @@ function MeetingsListPage() {
       let query = supabase
         .from("meetings")
         .select(
-          "id, type_key, scheduled_at, location, status, user_id, person_id, person:people(full_name), user:users!meetings_user_id_fkey(full_name)",
+          "id, type_key, scheduled_at, location, status, user_id, person_id, person:people(full_name), user:users(full_name)",
         )
         .eq("workspace_id", workspace.id)
         .order("scheduled_at", { ascending: false })
