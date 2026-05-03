@@ -208,7 +208,11 @@ function Dashboard() {
             </CardHeader>
             <CardContent className="p-0">
               <div style={{ height: 520 }}>
-                <OrgChart periodStart={period.startStr} periodEnd={period.endStr} />
+                <OrgChart
+                  periodStart={period.startStr}
+                  periodEnd={period.endStr}
+                  onImpersonate={(id, name) => void startImpersonate(id, name)}
+                />
               </div>
             </CardContent>
           </Card>
