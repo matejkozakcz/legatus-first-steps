@@ -83,6 +83,14 @@ export function MeetingDetailModalProvider({ children }: { children: ReactNode }
     () => ({ open: (id) => setOpenId(id), close: () => setOpenId(null) }),
     [],
   );
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (typeof id === "string") setOpenId(id);
+    };
+    window.addEventListener("open-meeting-detail", handler);
+    return () => window.removeEventListener("open-meeting-detail", handler);
+  }, []);
   return (
     <MeetingDetailCtx.Provider value={value}>
       {children}
