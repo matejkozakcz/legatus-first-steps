@@ -268,36 +268,13 @@ function Dashboard() {
             {meetingTypes.map((t) => {
               const stats = activityByType.get(t.key) ?? { scheduled: 0, completed: 0, referrals: 0 };
               return (
-                <Card key={t.key} style={{ borderTop: `3px solid ${t.color}` }}>
-                  <CardContent className="pt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className="text-[11px] font-bold uppercase tracking-wider"
-                        style={{ color: t.color }}
-                      >
-                        {t.label}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                          Domluvené
-                        </div>
-                        <div className="font-heading font-bold text-2xl text-foreground mt-1">
-                          {stats.scheduled}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                          Proběhlé
-                        </div>
-                        <div className="font-heading font-bold text-2xl mt-1" style={{ color: t.color }}>
-                          {stats.completed}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ActivityCard
+                  key={t.key}
+                  label={t.label}
+                  color={t.color}
+                  scheduled={stats.scheduled}
+                  completed={stats.completed}
+                />
               );
             })}
           </div>

@@ -8,10 +8,10 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { useRoles } from "@/hooks/useRoles";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
 import { useMeetingDetailModal } from "@/components/MeetingDetailModal";
+import { MeetingCard } from "@/components/dashboard/MeetingCard";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Tabs,
   TabsList,
