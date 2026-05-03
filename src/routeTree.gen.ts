@@ -13,7 +13,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
+import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -34,37 +38,83 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AdminWorkspacesIndexRoute = AdminWorkspacesIndexRouteImport.update({
+  id: '/workspaces/',
+  path: '/workspaces/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminWorkspacesIdRoute = AdminWorkspacesIdRouteImport.update({
+  id: '/workspaces/$id',
+  path: '/workspaces/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/admin/workspaces': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/dashboard'
+    | '/admin/templates'
+    | '/admin/'
+    | '/admin/workspaces/$id'
+    | '/admin/workspaces/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/admin/templates'
+    | '/admin'
+    | '/admin/workspaces/$id'
+    | '/admin/workspaces'
   id:
     | '__root__'
     | '/'
@@ -72,12 +122,16 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/admin/templates'
+    | '/admin/'
+    | '/admin/workspaces/$id'
+    | '/admin/workspaces/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
 }
 
@@ -111,12 +165,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/templates': {
+      id: '/admin/templates'
+      path: '/templates'
+      fullPath: '/admin/templates'
+      preLoaderRoute: typeof AdminTemplatesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/admin/workspaces/': {
+      id: '/admin/workspaces/'
+      path: '/workspaces'
+      fullPath: '/admin/workspaces/'
+      preLoaderRoute: typeof AdminWorkspacesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/workspaces/$id': {
+      id: '/admin/workspaces/$id'
+      path: '/workspaces/$id'
+      fullPath: '/admin/workspaces/$id'
+      preLoaderRoute: typeof AdminWorkspacesIdRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -133,10 +215,26 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface AdminRouteChildren {
+  AdminTemplatesRoute: typeof AdminTemplatesRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminWorkspacesIdRoute: typeof AdminWorkspacesIdRoute
+  AdminWorkspacesIndexRoute: typeof AdminWorkspacesIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminTemplatesRoute: AdminTemplatesRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminWorkspacesIdRoute: AdminWorkspacesIdRoute,
+  AdminWorkspacesIndexRoute: AdminWorkspacesIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
