@@ -15,7 +15,7 @@ export function GdprConsentModal() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const needsConsent = !!user && !user.gdpr_consented_at;
+  const needsConsent = !!user && !user.gdpr_consent_accepted_at;
   if (!needsConsent || !authUser) return null;
 
   const submit = async () => {
@@ -25,7 +25,7 @@ export function GdprConsentModal() {
       const { error: e } = await supabase
         .from("users")
         .update({
-          gdpr_consented_at: new Date().toISOString(),
+          gdpr_consent_accepted_at: new Date().toISOString(),
           gdpr_consent_version: CONSENT_VERSION,
         })
         .eq("id", authUser.id);
@@ -95,6 +95,6 @@ export function GdprConsentModal() {
 export function useGdprConsent() {
   const { user } = useWorkspace();
   return {
-    hasConsent: !!user?.gdpr_consented_at,
+    hasConsent: !!user?.gdpr_consent_accepted_at,
   };
 }
