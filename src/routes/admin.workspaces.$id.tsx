@@ -100,10 +100,10 @@ function WorkspaceDetail() {
     setSaving(field);
     try {
       if (!config) throw new Error("Workspace nemá záznam v workspace_config.");
-      const previous = (config as Record<string, unknown>)[field];
+      const previous = (config as unknown as Record<string, unknown>)[field];
       const { error } = await supabase
         .from("workspace_config")
-        .update({ [field]: parsed })
+        .update({ [field]: parsed as never })
         .eq("id", config.id);
       if (error) throw error;
 
