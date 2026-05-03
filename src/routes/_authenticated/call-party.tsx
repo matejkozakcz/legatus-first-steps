@@ -19,8 +19,15 @@ import {
   ActiveSession,
   SessionSummary,
   type CallRow,
+  type FillMode,
   type SessionRow,
 } from "@/components/call-party/ActiveSession";
+
+function useFillMode(): FillMode {
+  const { config } = useWorkspace();
+  const ui = (config?.uiConfig ?? {}) as { meeting_fill_mode?: FillMode };
+  return ui.meeting_fill_mode === "deferred" ? "deferred" : "immediate";
+}
 
 export const Route = createFileRoute("/_authenticated/call-party")({
   component: CallPartyPage,
@@ -134,7 +141,17 @@ function SoloTab() {
     );
   }
 
-  if (summary) return <SessionSummary data={summary} onReset={() => setSummary(null)} />;
+  const fillMode = useFillMode();
+
+  if (summary)
+    return (
+      <SessionSummary
+        data={summary}
+        workspaceId={workspace!.id}
+        userId={user!.id}
+        onReset={() => setSummary(null)}
+      />
+    );
 
   if (!session) {
     return (
@@ -162,6 +179,7 @@ function SoloTab() {
       userId={user!.id}
       onFinish={finishSession}
       finishing={finishing}
+      fillMode={fillMode}
     />
   );
 }

@@ -3,7 +3,9 @@ import { format } from "date-fns";
 import {
   AlertTriangle,
   Calendar as CalIcon,
+  CheckCircle2,
   Loader2,
+  MapPin,
   PhoneOff,
   Repeat,
   X,
@@ -12,6 +14,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useMeetingTypes } from "@/hooks/useMeetingTypes";
+import { createMeetingFromPending, type PendingMeeting } from "@/lib/callPartyMeetings";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +31,7 @@ import {
 } from "@/components/ui/select";
 
 export type Result = "no_answer" | "not_interested" | "callback" | "meeting";
+export type FillMode = "immediate" | "deferred";
 
 export const RESULTS: {
   key: Result;
@@ -58,6 +62,7 @@ export interface CallRow {
   called_at: string;
   meeting_id: string | null;
   session_id?: string;
+  pending_meeting?: PendingMeeting | null;
 }
 
 export interface SessionRow {
@@ -97,6 +102,7 @@ export function ActiveSession({
   userId,
   onFinish,
   finishing,
+  fillMode = "immediate",
 }: {
   session: SessionRow;
   calls: CallRow[];
@@ -105,6 +111,7 @@ export function ActiveSession({
   userId: string;
   onFinish: () => void;
   finishing: boolean;
+  fillMode?: FillMode;
 }) {
   const { meetingTypes } = useMeetingTypes();
   const [name, setName] = useState("");
@@ -121,6 +128,7 @@ export function ActiveSession({
   const [mTypeKey, setMTypeKey] = useState("");
   const [mDate, setMDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [mTime, setMTime] = useState(format(new Date(), "HH:mm"));
+  const [mLocation, setMLocation] = useState("");
 
   useEffect(() => {
     const ch = supabase
@@ -180,6 +188,7 @@ export function ActiveSession({
     setResult("");
     setNote("");
     setMTypeKey("");
+    setMLocation("");
     setSuggestions([]);
     setDuplicate(false);
   };
@@ -189,45 +198,29 @@ export function ActiveSession({
       toast.error("Vyplň jméno a výsledek.");
       return;
     }
+    if (result === "meeting" && (!mTypeKey || !mDate || !mTime)) {
+      toast.error("Vyplň typ schůzky, datum a čas.");
+      return;
+    }
     setSubmitting(true);
     let meetingId: string | null = null;
+    let pending: PendingMeeting | null = null;
+
     try {
+      const trimmedName = name.trim();
       if (result === "meeting") {
-        if (!mTypeKey || !mDate || !mTime) {
-          toast.error("Vyplň typ schůzky, datum a čas.");
-          setSubmitting(false);
-          return;
-        }
-        let personId: string | null =
-          suggestions.find((p) => p.full_name === name.trim())?.id ?? null;
-        if (!personId) {
-          const { data: p, error: pe } = await supabase
-            .from("people")
-            .insert({
-              workspace_id: workspaceId,
-              created_by: userId,
-              full_name: name.trim(),
-            })
-            .select("id")
-            .single();
-          if (pe) throw pe;
-          personId = p.id;
-        }
         const scheduledAt = new Date(`${mDate}T${mTime}:00`).toISOString();
-        const { data: m, error: me } = await supabase
-          .from("meetings")
-          .insert({
-            workspace_id: workspaceId,
-            user_id: userId,
-            person_id: personId,
-            type_key: mTypeKey,
-            scheduled_at: scheduledAt,
-            status: "scheduled",
-          })
-          .select("id")
-          .single();
-        if (me) throw me;
-        meetingId = m.id;
+        const pm: PendingMeeting = {
+          type_key: mTypeKey,
+          scheduled_at: scheduledAt,
+          location: mLocation.trim() || null,
+          contact_name: trimmedName,
+        };
+        if (fillMode === "immediate") {
+          meetingId = await createMeetingFromPending(workspaceId, userId, pm);
+        } else {
+          pending = pm;
+        }
       }
 
       const { data: c, error: ce } = await supabase
@@ -235,11 +228,12 @@ export function ActiveSession({
         .insert({
           workspace_id: workspaceId,
           session_id: session.id,
-          contact_name: name.trim(),
+          contact_name: trimmedName,
           contact_name_normalized: normalizeName(name),
           result,
           note: note.trim() || null,
           meeting_id: meetingId,
+          pending_meeting: pending as never,
         })
         .select()
         .single();
@@ -247,7 +241,11 @@ export function ActiveSession({
       setCalls((prev) =>
         prev.find((x) => x.id === c.id) ? prev : [c as CallRow, ...prev],
       );
-      toast.success("Hovor přidán");
+      toast.success(
+        result === "meeting" && fillMode === "deferred"
+          ? "Hovor přidán — schůzku potvrdíš na konci"
+          : "Hovor přidán",
+      );
       reset();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "neznámá";
@@ -358,6 +356,11 @@ export function ActiveSession({
 
           {result === "meeting" && (
             <div className="space-y-3 rounded-md border bg-muted/30 p-3">
+              {fillMode === "deferred" && (
+                <p className="text-xs text-muted-foreground">
+                  Schůzka se vytvoří až po ukončení Call Party (potvrdíš ve shrnutí).
+                </p>
+              )}
               <div className="space-y-2">
                 <Label>Typ schůzky</Label>
                 <Select value={mTypeKey} onValueChange={setMTypeKey}>
@@ -382,6 +385,14 @@ export function ActiveSession({
                   <Label>Čas</Label>
                   <Input type="time" value={mTime} onChange={(e) => setMTime(e.target.value)} />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Místo (nepovinné)</Label>
+                <Input
+                  value={mLocation}
+                  onChange={(e) => setMLocation(e.target.value)}
+                  placeholder="Kavárna, online..."
+                />
               </div>
             </div>
           )}
@@ -418,6 +429,11 @@ export function ActiveSession({
                       )}
                     </div>
                     <div className="flex items-center gap-2">
+                      {c.pending_meeting && !c.meeting_id && (
+                        <Badge variant="outline" className="text-[10px]">
+                          čeká na potvrzení
+                        </Badge>
+                      )}
                       <Badge variant={r?.variant ?? "secondary"}>{r?.label ?? c.result}</Badge>
                       <span className="text-xs text-muted-foreground tabular-nums">
                         {format(new Date(c.called_at), "HH:mm")}
@@ -436,39 +452,164 @@ export function ActiveSession({
 
 export function SessionSummary({
   data,
+  workspaceId,
+  userId,
   onReset,
 }: {
   data: { session: SessionRow; calls: CallRow[] };
+  workspaceId: string;
+  userId: string;
   onReset: () => void;
 }) {
+  const { getMeetingType } = useMeetingTypes();
+  const [pendingCalls, setPendingCalls] = useState<CallRow[]>(
+    data.calls.filter((c) => c.pending_meeting && !c.meeting_id),
+  );
+  const [confirming, setConfirming] = useState<Record<string, boolean>>({});
+
   const counts: Record<string, number> = {};
   for (const c of data.calls) counts[c.result] = (counts[c.result] ?? 0) + 1;
   const ms =
     new Date(data.session.finished_at ?? Date.now()).getTime() -
     new Date(data.session.started_at).getTime();
   const mins = Math.max(1, Math.round(ms / 60000));
+
+  const confirm = async (call: CallRow) => {
+    if (!call.pending_meeting) return;
+    setConfirming((s) => ({ ...s, [call.id]: true }));
+    try {
+      const meetingId = await createMeetingFromPending(
+        workspaceId,
+        userId,
+        call.pending_meeting,
+      );
+      const { error } = await supabase
+        .from("calls")
+        .update({ meeting_id: meetingId, pending_meeting: null })
+        .eq("id", call.id);
+      if (error) throw error;
+      setPendingCalls((prev) => prev.filter((c) => c.id !== call.id));
+      toast.success("Schůzka vytvořena");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "neznámá";
+      toast.error("Chyba: " + msg);
+    } finally {
+      setConfirming((s) => ({ ...s, [call.id]: false }));
+    }
+  };
+
+  const skip = async (call: CallRow) => {
+    setConfirming((s) => ({ ...s, [call.id]: true }));
+    const { error } = await supabase
+      .from("calls")
+      .update({ pending_meeting: null })
+      .eq("id", call.id);
+    setConfirming((s) => ({ ...s, [call.id]: false }));
+    if (error) {
+      toast.error("Chyba: " + error.message);
+      return;
+    }
+    setPendingCalls((prev) => prev.filter((c) => c.id !== call.id));
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Shrnutí Call Party</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="text-sm text-muted-foreground">
-          Délka: <strong className="text-foreground">{mins} min</strong> · Celkem hovorů:{" "}
-          <strong className="text-foreground">{data.calls.length}</strong>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {RESULTS.map((r) => (
-            <div key={r.key} className="rounded-md border p-3 text-center">
-              <div className="text-2xl font-bold">{counts[r.key] ?? 0}</div>
-              <div className="text-xs text-muted-foreground">{r.label}</div>
-            </div>
-          ))}
-        </div>
-        <Button onClick={onReset} className="w-full">
-          Zavřít
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Shrnutí Call Party</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-sm text-muted-foreground">
+            Délka: <strong className="text-foreground">{mins} min</strong> · Celkem hovorů:{" "}
+            <strong className="text-foreground">{data.calls.length}</strong>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {RESULTS.map((r) => (
+              <div key={r.key} className="rounded-md border p-3 text-center">
+                <div className="text-2xl font-bold">{counts[r.key] ?? 0}</div>
+                <div className="text-xs text-muted-foreground">{r.label}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {pendingCalls.length > 0 && (
+        <Card className="border-primary/40">
+          <CardHeader>
+            <CardTitle className="text-base">
+              Potvrď schůzky ({pendingCalls.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Tyto hovory skončily domluvenou schůzkou. Potvrď je pro vytvoření v kalendáři.
+            </p>
+            <ul className="divide-y">
+              {pendingCalls.map((c) => {
+                const pm = c.pending_meeting!;
+                const t = getMeetingType(pm.type_key);
+                return (
+                  <li
+                    key={c.id}
+                    className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0 space-y-1">
+                      <div className="font-medium">{c.contact_name}</div>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <span
+                            className="h-2 w-2 rounded-full"
+                            style={{ backgroundColor: t?.color }}
+                          />
+                          {t?.label ?? pm.type_key}
+                        </span>
+                        <span>·</span>
+                        <span>{format(new Date(pm.scheduled_at), "d. M. yyyy HH:mm")}</span>
+                        {pm.location && (
+                          <>
+                            <span>·</span>
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {pm.location}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => skip(c)}
+                        disabled={confirming[c.id]}
+                      >
+                        Zahodit
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => confirm(c)}
+                        disabled={confirming[c.id]}
+                      >
+                        {confirming[c.id] ? (
+                          <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="mr-1 h-4 w-4" />
+                        )}
+                        Vytvořit
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      <Button onClick={onReset} className="w-full">
+        Zavřít
+      </Button>
+    </div>
   );
 }

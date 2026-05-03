@@ -35,7 +35,12 @@ interface EventRow {
 
 function EventDetailPage() {
   const { id } = useParams({ from: "/_authenticated/call-party/events/$id" });
-  const { workspace, user } = useWorkspace();
+  const { workspace, user, config } = useWorkspace();
+  const fillMode =
+    ((config?.uiConfig as { meeting_fill_mode?: "immediate" | "deferred" })?.meeting_fill_mode ===
+    "deferred"
+      ? "deferred"
+      : "immediate") as "immediate" | "deferred";
 
   const [event, setEvent] = useState<EventRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -164,7 +169,12 @@ function EventDetailPage() {
       <LiveStats eventId={event.id} />
 
       {summary ? (
-        <SessionSummary data={summary} onReset={() => setSummary(null)} />
+        <SessionSummary
+          data={summary}
+          workspaceId={workspace!.id}
+          userId={user!.id}
+          onReset={() => setSummary(null)}
+        />
       ) : mySession ? (
         <ActiveSession
           session={mySession}
@@ -174,6 +184,7 @@ function EventDetailPage() {
           userId={user!.id}
           onFinish={finish}
           finishing={finishing}
+          fillMode={fillMode}
         />
       ) : (
         <Card>

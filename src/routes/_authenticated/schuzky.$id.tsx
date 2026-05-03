@@ -94,6 +94,7 @@ function MeetingDetailPage() {
 
   const [meeting, setMeeting] = useState<MeetingFull | null>(null);
   const [children, setChildren] = useState<ChildMeeting[]>([]);
+  const [source, setSource] = useState<{ session_id: string; event_id: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -134,6 +135,18 @@ function MeetingDetailPage() {
         .order("scheduled_at", { ascending: true });
       if (cancelled) return;
       setChildren((kids ?? []) as unknown as ChildMeeting[]);
+
+      const { data: srcCall } = await supabase
+        .from("calls")
+        .select("session_id, call_party_sessions:session_id(event_id)")
+        .eq("meeting_id", id)
+        .maybeSingle();
+      if (!cancelled && srcCall?.session_id) {
+        const eventId =
+          (srcCall as { call_party_sessions?: { event_id: string | null } | null })
+            .call_party_sessions?.event_id ?? null;
+        setSource({ session_id: srcCall.session_id, event_id: eventId });
+      }
       setLoading(false);
     })();
     return () => {
@@ -264,6 +277,31 @@ function MeetingDetailPage() {
               reload();
             }}
           />
+        )}
+
+        {source && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Zdroj</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm">
+              Schůzka vznikla z{" "}
+              {source.event_id ? (
+                <Link
+                  to="/call-party/events/$id"
+                  params={{ id: source.event_id }}
+                  className="text-primary hover:underline"
+                >
+                  skupinové Call Party
+                </Link>
+              ) : (
+                <Link to="/call-party" className="text-primary hover:underline">
+                  Call Party session
+                </Link>
+              )}
+              .
+            </CardContent>
+          </Card>
         )}
 
         {meeting?.parent && (
