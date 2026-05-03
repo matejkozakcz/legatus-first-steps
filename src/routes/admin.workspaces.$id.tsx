@@ -74,7 +74,7 @@ function WorkspaceDetail() {
       if (cfg) {
         const next = {} as Record<FieldKey, string>;
         for (const f of FIELDS) {
-          next[f.key] = JSON.stringify((cfg as Record<string, unknown>)[f.key] ?? null, null, 2);
+          next[f.key] = JSON.stringify((cfg as unknown as Record<string, unknown>)[f.key] ?? null, null, 2);
         }
         setDrafts(next);
       }
