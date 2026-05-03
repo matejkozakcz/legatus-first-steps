@@ -340,9 +340,10 @@ export function ActiveSession({
                 <Button
                   key={r.key}
                   type="button"
+                  size="lg"
                   variant={result === r.key ? "default" : "outline"}
                   onClick={() => setResult(r.key)}
-                  className="w-full"
+                  className="w-full min-h-14 text-base"
                 >
                   {r.key === "callback" && <Repeat className="mr-1 h-4 w-4" />}
                   {r.key === "meeting" && <CalIcon className="mr-1 h-4 w-4" />}

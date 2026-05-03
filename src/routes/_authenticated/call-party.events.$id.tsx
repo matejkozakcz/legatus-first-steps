@@ -215,7 +215,7 @@ function OrganizerPanel({ event, joinUrl }: { event: EventRow; joinUrl: string }
         <CardTitle className="text-base">Pozvat členy týmu</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        <div className="rounded-lg border bg-white p-3">
+        <div className="rounded-lg border bg-white p-3 dark:bg-foreground">
           <QRCodeSVG value={joinUrl} size={160} />
         </div>
         <div className="flex-1 space-y-3">

@@ -239,7 +239,7 @@ function Dashboard() {
                       style={{ borderTop: `2px solid ${t.color}` }}
                     >
                       <div className="flex items-baseline justify-between">
-                        <Badge style={{ backgroundColor: t.color, color: "#fff" }}>{t.key}</Badge>
+                        <Badge style={{ backgroundColor: t.color }} className="text-primary-foreground">{t.key}</Badge>
                         <span>
                           <span style={{ color: t.color, fontWeight: 700, fontSize: 22 }}>{stats.completed}</span>
                           <span className="text-xs text-muted-foreground font-medium"> z {stats.scheduled}</span>
