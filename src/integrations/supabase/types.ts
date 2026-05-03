@@ -122,6 +122,7 @@ export type Database = {
           id: string
           meeting_id: string | null
           note: string | null
+          pending_meeting: Json | null
           result: string
           session_id: string
           workspace_id: string
@@ -133,6 +134,7 @@ export type Database = {
           id?: string
           meeting_id?: string | null
           note?: string | null
+          pending_meeting?: Json | null
           result: string
           session_id: string
           workspace_id: string
@@ -144,6 +146,7 @@ export type Database = {
           id?: string
           meeting_id?: string | null
           note?: string | null
+          pending_meeting?: Json | null
           result?: string
           session_id?: string
           workspace_id?: string
