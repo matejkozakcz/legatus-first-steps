@@ -26,6 +26,7 @@ import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces
 import { Route as AuthenticatedSchuzkyNovaRouteImport } from './routes/_authenticated/schuzky.nova'
 import { Route as AuthenticatedSchuzkyIdRouteImport } from './routes/_authenticated/schuzky.$id'
 import { Route as AuthenticatedNastaveniTymRouteImport } from './routes/_authenticated/nastaveni.tym'
+import { Route as AuthenticatedCallPartyEventsIdRouteImport } from './routes/_authenticated/call-party.events.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -114,12 +115,18 @@ const AuthenticatedNastaveniTymRoute =
     path: '/nastaveni/tym',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCallPartyEventsIdRoute =
+  AuthenticatedCallPartyEventsIdRouteImport.update({
+    id: '/events/$id',
+    path: '/events/$id',
+    getParentRoute: () => AuthenticatedCallPartyRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/call-party': typeof AuthenticatedCallPartyRoute
+  '/call-party': typeof AuthenticatedCallPartyRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -132,11 +139,12 @@ export interface FileRoutesByFullPath {
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
+  '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/call-party': typeof AuthenticatedCallPartyRoute
+  '/call-party': typeof AuthenticatedCallPartyRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -149,6 +157,7 @@ export interface FileRoutesByTo {
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/schuzky': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces': typeof AdminWorkspacesIndexRoute
+  '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -156,7 +165,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/call-party': typeof AuthenticatedCallPartyRoute
+  '/_authenticated/call-party': typeof AuthenticatedCallPartyRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
@@ -169,6 +178,7 @@ export interface FileRoutesById {
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/_authenticated/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
+  '/_authenticated/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/admin/workspaces/$id'
     | '/schuzky/'
     | '/admin/workspaces/'
+    | '/call-party/events/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/admin/workspaces/$id'
     | '/schuzky'
     | '/admin/workspaces'
+    | '/call-party/events/$id'
   id:
     | '__root__'
     | '/'
@@ -225,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/workspaces/$id'
     | '/_authenticated/schuzky/'
     | '/admin/workspaces/'
+    | '/_authenticated/call-party/events/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -356,11 +369,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNastaveniTymRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/call-party/events/$id': {
+      id: '/_authenticated/call-party/events/$id'
+      path: '/events/$id'
+      fullPath: '/call-party/events/$id'
+      preLoaderRoute: typeof AuthenticatedCallPartyEventsIdRouteImport
+      parentRoute: typeof AuthenticatedCallPartyRoute
+    }
   }
 }
 
+interface AuthenticatedCallPartyRouteChildren {
+  AuthenticatedCallPartyEventsIdRoute: typeof AuthenticatedCallPartyEventsIdRoute
+}
+
+const AuthenticatedCallPartyRouteChildren: AuthenticatedCallPartyRouteChildren =
+  {
+    AuthenticatedCallPartyEventsIdRoute: AuthenticatedCallPartyEventsIdRoute,
+  }
+
+const AuthenticatedCallPartyRouteWithChildren =
+  AuthenticatedCallPartyRoute._addFileChildren(
+    AuthenticatedCallPartyRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
-  AuthenticatedCallPartyRoute: typeof AuthenticatedCallPartyRoute
+  AuthenticatedCallPartyRoute: typeof AuthenticatedCallPartyRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
@@ -371,7 +405,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedCallPartyRoute: AuthenticatedCallPartyRoute,
+  AuthenticatedCallPartyRoute: AuthenticatedCallPartyRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,
@@ -411,12 +445,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
