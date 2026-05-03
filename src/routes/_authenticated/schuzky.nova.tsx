@@ -183,7 +183,7 @@ function NewMeetingPage() {
 
     const { data, error } = await supabase
       .from("meetings")
-      .insert([payload])
+      .insert([payload as never])
       .select("id")
       .single();
 
