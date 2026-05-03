@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,13 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import {
+  TemplateEditor,
+  DEFAULT_TEMPLATE,
+  normalizeTemplate,
+  templateToDb,
+  type TemplateData,
+} from "@/components/admin/TemplateEditor";
 
 interface Template {
   id: string;
@@ -34,26 +40,11 @@ export const Route = createFileRoute("/admin/templates")({
   component: TemplatesList,
 });
 
-const DEFAULTS = {
-  modules: { meetings: true, people: true, team: true, production: true },
-  roles: [
-    { key: "agent", label: "Agent", level: 3 },
-    { key: "manager", label: "Manažer", level: 2 },
-    { key: "director", label: "Ředitel", level: 1 },
-  ],
-  meetingTypes: [
-    { key: "intro", label: "Úvodní schůzka", color: "#3b82f6" },
-    { key: "closing", label: "Uzavírací schůzka", color: "#10b981" },
-  ],
-  metrics: [{ key: "smlouvy", label: "Smlouvy" }],
-  followUpRules: { intro_to_closing: 7 },
-  productionUnit: { key: "smlouva", label: "Smlouva", value_multiplier: 1.0 },
-};
-
 function TemplatesList() {
   const [items, setItems] = useState<Template[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editing, setEditing] = useState<Template | null>(null);
 
   const load = async () => {
     const { data, error: e } = await supabase
@@ -75,13 +66,14 @@ function TemplatesList() {
           <p className="text-xs uppercase tracking-wider text-muted-foreground">Admin</p>
           <h1 className="text-2xl font-semibold">Workspace Templates</h1>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button>+ Nová šablona</Button>
           </DialogTrigger>
-          <NewTemplateDialog
-            onCreated={() => {
-              setOpen(false);
+          <TemplateDialog
+            mode="create"
+            onDone={() => {
+              setCreateOpen(false);
               void load();
             }}
           />
@@ -102,43 +94,61 @@ function TemplatesList() {
         {items?.map((t) => (
           <Card key={t.id}>
             <CardHeader>
-              <CardTitle className="text-base">{t.name}</CardTitle>
-              {t.description && (
-                <p className="text-sm text-muted-foreground">{t.description}</p>
-              )}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <CardTitle className="text-base">{t.name}</CardTitle>
+                  {t.description && (
+                    <p className="text-sm text-muted-foreground">{t.description}</p>
+                  )}
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setEditing(t)}>
+                  Upravit
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent>
-              <Preview label="Roles" value={t.default_roles} />
-              <Preview label="Meeting Types" value={t.default_meeting_types} />
-              <Preview label="Metrics" value={t.default_metrics} />
-              <Preview label="Modules" value={t.default_modules} />
-              <Preview label="Follow-Up Rules" value={t.default_follow_up_rules} />
-              <Preview label="Production Unit" value={t.default_production_unit} />
+            <CardContent className="space-y-1 text-sm text-muted-foreground">
+              <div>
+                Role: {Array.isArray(t.default_roles) ? (t.default_roles as unknown[]).length : 0}
+              </div>
+              <div>
+                Typy schůzek:{" "}
+                {Array.isArray(t.default_meeting_types) ? (t.default_meeting_types as unknown[]).length : 0}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        {editing && (
+          <TemplateDialog
+            mode="edit"
+            template={editing}
+            onDone={() => {
+              setEditing(null);
+              void load();
+            }}
+          />
+        )}
+      </Dialog>
     </div>
   );
 }
 
-function Preview({ label, value }: { label: string; value: unknown }) {
-  return (
-    <details className="border-t py-2 text-sm">
-      <summary className="cursor-pointer text-xs uppercase tracking-wider text-muted-foreground">
-        {label}
-      </summary>
-      <pre className="mt-2 max-h-48 overflow-auto rounded-md bg-muted/30 p-2 text-xs">
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    </details>
+function TemplateDialog({
+  mode,
+  template,
+  onDone,
+}: {
+  mode: "create" | "edit";
+  template?: Template;
+  onDone: () => void;
+}) {
+  const [name, setName] = useState(template?.name ?? "");
+  const [description, setDescription] = useState(template?.description ?? "");
+  const [data, setData] = useState<TemplateData>(
+    template ? normalizeTemplate(template) : DEFAULT_TEMPLATE,
   );
-}
-
-function NewTemplateDialog({ onCreated }: { onCreated: () => void }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [json, setJson] = useState(JSON.stringify(DEFAULTS, null, 2));
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -148,20 +158,24 @@ function NewTemplateDialog({ onCreated }: { onCreated: () => void }) {
     }
     setBusy(true);
     try {
-      const parsed = JSON.parse(json);
-      const { error } = await supabase.from("workspace_templates").insert({
+      const payload = {
         name: name.trim(),
-        description: description.trim() || null,
-        default_modules: parsed.modules ?? {},
-        default_roles: parsed.roles ?? [],
-        default_meeting_types: parsed.meetingTypes ?? [],
-        default_metrics: parsed.metrics ?? [],
-        default_follow_up_rules: parsed.followUpRules ?? {},
-        default_production_unit: parsed.productionUnit ?? {},
-      });
-      if (error) throw error;
-      toast.success("Šablona vytvořena");
-      onCreated();
+        description: description?.trim() || null,
+        ...templateToDb(data),
+      } as never;
+      if (mode === "create") {
+        const { error } = await supabase.from("workspace_templates").insert(payload);
+        if (error) throw error;
+        toast.success("Šablona vytvořena");
+      } else if (template) {
+        const { error } = await supabase
+          .from("workspace_templates")
+          .update(payload)
+          .eq("id", template.id);
+        if (error) throw error;
+        toast.success("Šablona uložena");
+      }
+      onDone();
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -170,40 +184,33 @@ function NewTemplateDialog({ onCreated }: { onCreated: () => void }) {
   };
 
   return (
-    <DialogContent className="max-w-2xl">
+    <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Nová šablona</DialogTitle>
+        <DialogTitle>{mode === "create" ? "Nová šablona" : "Upravit šablonu"}</DialogTitle>
         <DialogDescription>
           Definuj výchozí konfiguraci pro nové workspaces.
         </DialogDescription>
       </DialogHeader>
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="t-name">Název</Label>
-          <Input id="t-name" value={name} onChange={(e) => setName(e.target.value)} />
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="t-name">Název</Label>
+            <Input id="t-name" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="t-desc">Popis</Label>
+            <Input
+              id="t-desc"
+              value={description ?? ""}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="t-desc">Popis</Label>
-          <Input
-            id="t-desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="t-json">Konfigurace (JSON)</Label>
-          <Textarea
-            id="t-json"
-            rows={14}
-            className="font-mono text-xs"
-            value={json}
-            onChange={(e) => setJson(e.target.value)}
-          />
-        </div>
+        <TemplateEditor value={data} onChange={setData} />
       </div>
       <DialogFooter>
         <Button onClick={submit} disabled={busy}>
-          {busy ? "Vytvářím…" : "Vytvořit šablonu"}
+          {busy ? "Ukládám…" : mode === "create" ? "Vytvořit šablonu" : "Uložit"}
         </Button>
       </DialogFooter>
     </DialogContent>
