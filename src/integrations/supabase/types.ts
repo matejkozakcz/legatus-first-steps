@@ -578,6 +578,11 @@ export type Database = {
     }
     Functions: {
       accept_workspace_invite: { Args: { _token: string }; Returns: string }
+      admin_end_impersonation: { Args: { _log_id: string }; Returns: undefined }
+      admin_start_impersonation: {
+        Args: { _workspace_id: string }
+        Returns: string
+      }
       complete_workspace_setup: {
         Args: { _name: string; _workspace_id: string }
         Returns: undefined

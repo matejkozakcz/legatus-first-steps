@@ -33,6 +33,8 @@ const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(
   undefined,
 );
 
+export const IMPERSONATION_KEY = "legatus_impersonate_workspace_id";
+
 async function loadWorkspaceConfig(
   userId: string,
 ): Promise<WorkspaceConfig | null> {
@@ -53,7 +55,14 @@ async function loadWorkspaceConfig(
     .maybeSingle();
   const isLegatusAdmin = !!adminRow;
 
-  if (!userRow.workspace_id) {
+  // 2b. Admin impersonation override
+  let effectiveWorkspaceId = userRow.workspace_id;
+  if (isLegatusAdmin && typeof window !== "undefined") {
+    const override = window.localStorage.getItem(IMPERSONATION_KEY);
+    if (override) effectiveWorkspaceId = override;
+  }
+
+  if (!effectiveWorkspaceId) {
     // User without workspace (e.g. fresh Legatus admin) — preserve admin flag
     return {
       workspace: null as unknown as Workspace,
@@ -81,22 +90,22 @@ async function loadWorkspaceConfig(
     supabase
       .from("workspaces")
       .select("*")
-      .eq("id", userRow.workspace_id)
+      .eq("id", effectiveWorkspaceId)
       .single(),
     supabase
       .from("workspace_roles")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id)
+      .eq("workspace_id", effectiveWorkspaceId)
       .order("level", { ascending: true }),
     supabase
       .from("workspace_config")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id)
+      .eq("workspace_id", effectiveWorkspaceId)
       .maybeSingle(),
     supabase
       .from("production_units")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id),
+      .eq("workspace_id", effectiveWorkspaceId),
   ]);
 
   if (wsErr) throw wsErr;
