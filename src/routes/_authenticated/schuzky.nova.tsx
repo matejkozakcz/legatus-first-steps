@@ -524,30 +524,18 @@ function NewMeetingPage() {
         </div>
       </main>
 
-      <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Naplánovat follow-up?</DialogTitle>
-            <DialogDescription>
-              Schůzka byla uložena. Follow-up flow doplníme v dalším kroku.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="text-xs text-muted-foreground">
-            Meeting ID: {createdMeetingId}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: "/dashboard" })}
-            >
-              Přeskočit
-            </Button>
-            <Button onClick={() => navigate({ to: "/dashboard" })}>
-              Hotovo
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <FollowUpMeetingModal
+        open={followUpOpen}
+        onOpenChange={(o) => {
+          setFollowUpOpen(o);
+          if (!o) navigate({ to: "/dashboard" });
+        }}
+        parent={createdMeeting}
+        onDone={() => {
+          setFollowUpOpen(false);
+          navigate({ to: "/dashboard" });
+        }}
+      />
     </div>
   );
 }
