@@ -30,6 +30,7 @@ interface Workspace {
   status: string;
   plan: string;
   created_at: string;
+  invite_token: string | null;
 }
 
 interface ConfigRow {
