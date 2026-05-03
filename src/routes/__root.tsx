@@ -1,12 +1,8 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
-import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
-import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 
 function NotFoundComponent() {
   return (
@@ -34,20 +30,19 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#00abbd" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Legatus" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Legatus 2" },
+      { name: "description", content: "Legatus is a modular SaaS platform for managing workspaces, users, and business processes." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Legatus 2" },
+      { property: "og:description", content: "Legatus is a modular SaaS platform for managing workspaces, users, and business processes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Legatus 2" },
+      { name: "twitter:description", content: "Legatus is a modular SaaS platform for managing workspaces, users, and business processes." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cf94b692-be60-452b-b71f-5e673004ef65/id-preview-089fdedc--4786308c-2a24-4975-a2aa-489e879e540e.lovable.app-1777849667004.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cf94b692-be60-452b-b71f-5e673004ef65/id-preview-089fdedc--4786308c-2a24-4975-a2aa-489e879e540e.lovable.app-1777849667004.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -76,17 +71,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const [queryClient] = useState(() => new QueryClient());
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <WorkspaceProvider>
-          <ImpersonationProvider>
-            <ImpersonationBanner />
-            <Outlet />
-          </ImpersonationProvider>
-        </WorkspaceProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <WorkspaceProvider>
+        <Outlet />
+      </WorkspaceProvider>
+    </AuthProvider>
   );
 }
