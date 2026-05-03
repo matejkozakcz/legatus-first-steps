@@ -49,22 +49,22 @@ function Dashboard() {
     if (!workspace && isAdmin) navigate({ to: "/admin", replace: true });
   }, [workspace, isAdmin, navigate]);
 
-  // Goals for current user + period
+  // Goals for viewed user (self or impersonated) + period
   const { data: goals = [] } = useQuery({
-    queryKey: ["goals", workspace?.id, user?.id, mode, period.startStr],
+    queryKey: ["goals", workspace?.id, viewedUserId, mode, period.startStr],
     queryFn: async () => {
-      if (!workspace?.id || !user?.id) return [];
+      if (!workspace?.id || !viewedUserId) return [];
       const { data, error } = await supabase
         .from("goals")
         .select("metric_key, target_value")
         .eq("workspace_id", workspace.id)
-        .eq("user_id", user.id)
+        .eq("user_id", viewedUserId)
         .eq("period_type", mode)
         .eq("period_start", period.startStr);
       if (error) throw error;
       return data || [];
     },
-    enabled: !!workspace?.id && !!user?.id,
+    enabled: !!workspace?.id && !!viewedUserId,
   });
 
   // Meetings in period (own + subtree per RLS)
@@ -92,17 +92,17 @@ function Dashboard() {
 
   const personalBj = useMemo(() => {
     return periodMeetings
-      .filter((m: any) => m.user_id === user?.id)
+      .filter((m: any) => m.user_id === viewedUserId)
       .reduce((s: number, m: any) => s + Number(m.result?.bj ?? m.result?.podepsane_bj ?? 0), 0);
-  }, [periodMeetings, user?.id]);
+  }, [periodMeetings, viewedUserId]);
 
   const teamBj = useMemo(() => {
     return periodMeetings.reduce((s: number, m: any) => s + Number(m.result?.bj ?? m.result?.podepsane_bj ?? 0), 0);
   }, [periodMeetings]);
 
   const personalMeetingCount = useMemo(
-    () => periodMeetings.filter((m: any) => m.user_id === user?.id && m.status !== "cancelled").length,
-    [periodMeetings, user?.id]
+    () => periodMeetings.filter((m: any) => m.user_id === viewedUserId && m.status !== "cancelled").length,
+    [periodMeetings, viewedUserId]
   );
 
   // Activity per meeting type: scheduled vs completed in period
@@ -147,16 +147,17 @@ function Dashboard() {
           <div>
             <h1 className="text-xl font-semibold">{workspace.name}</h1>
             <p className="text-xs text-muted-foreground">
-              {user?.full_name} · {currentRole?.label ?? "—"}
+              {viewedUserName ?? user?.full_name} · {currentRole?.label ?? "—"}
+              {isImpersonating && <span className="ml-2 text-amber-600 font-medium">(náhled)</span>}
             </p>
           </div>
           <PeriodSwitcher mode={mode} setMode={setMode} anchor={anchor} setAnchor={setAnchor} label={period.label} />
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              disabled={!hasConsent}
+              disabled={!hasConsent || isImpersonating}
               onClick={() => navigate({ to: "/schuzky/nova" })}
-              title={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
+              title={isImpersonating ? "Pouze náhled" : !hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
             >
               <Plus className="mr-1 h-4 w-4" /> Schůzka
             </Button>
