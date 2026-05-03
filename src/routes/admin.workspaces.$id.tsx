@@ -190,6 +190,49 @@ function WorkspaceDetail() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Pozvánka</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid gap-2 sm:grid-cols-[140px_1fr_auto] sm:items-end">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Token
+              </p>
+              <Input
+                value={workspace.invite_token ?? ""}
+                readOnly
+                className="font-mono"
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Plný odkaz
+              </p>
+              <Input value={inviteUrl} readOnly />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={copyInvite}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={rotateToken}
+                disabled={rotatingToken}
+              >
+                {rotatingToken ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Rotovat
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {!config && (
         <Card className="border-dashed p-6 text-sm text-muted-foreground">
           Tento workspace nemá záznam v <code>workspace_config</code>.
