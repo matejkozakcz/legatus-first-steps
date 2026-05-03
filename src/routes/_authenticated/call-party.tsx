@@ -141,7 +141,17 @@ function SoloTab() {
     );
   }
 
-  if (summary) return <SessionSummary data={summary} onReset={() => setSummary(null)} />;
+  const fillMode = useFillMode();
+
+  if (summary)
+    return (
+      <SessionSummary
+        data={summary}
+        workspaceId={workspace!.id}
+        userId={user!.id}
+        onReset={() => setSummary(null)}
+      />
+    );
 
   if (!session) {
     return (
@@ -169,6 +179,7 @@ function SoloTab() {
       userId={user!.id}
       onFinish={finishSession}
       finishing={finishing}
+      fillMode={fillMode}
     />
   );
 }
