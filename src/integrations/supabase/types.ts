@@ -14,13 +14,408 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      impersonation_log: {
+        Row: {
+          ended_at: string | null
+          id: string
+          impersonated_id: string
+          impersonator_id: string
+          started_at: string
+          workspace_id: string
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          impersonated_id: string
+          impersonator_id: string
+          started_at?: string
+          workspace_id: string
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          impersonated_id?: string
+          impersonator_id?: string
+          started_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impersonation_log_impersonated_id_fkey"
+            columns: ["impersonated_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impersonation_log_impersonator_id_fkey"
+            columns: ["impersonator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impersonation_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legatus_admins: {
+        Row: {
+          access_level: string
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_level?: string
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      production_units: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          label: string
+          value_multiplier: number
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          label: string
+          value_multiplier?: number
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          label?: string
+          value_multiplier?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_units_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          gdpr_consent_accepted_at: string | null
+          gdpr_consent_version: string | null
+          id: string
+          is_active: boolean
+          manager_id: string | null
+          role_key: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          gdpr_consent_accepted_at?: string | null
+          gdpr_consent_version?: string | null
+          id: string
+          is_active?: boolean
+          manager_id?: string | null
+          role_key?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          gdpr_consent_accepted_at?: string | null
+          gdpr_consent_version?: string | null
+          id?: string
+          is_active?: boolean
+          manager_id?: string | null
+          role_key?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "users_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_config: {
+        Row: {
+          created_at: string
+          follow_up_rules: Json
+          id: string
+          impersonation: Json
+          meeting_types: Json
+          metrics: Json
+          modules: Json
+          promotion: Json
+          ui_config: Json
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          follow_up_rules?: Json
+          id?: string
+          impersonation?: Json
+          meeting_types?: Json
+          metrics?: Json
+          modules?: Json
+          promotion?: Json
+          ui_config?: Json
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          follow_up_rules?: Json
+          id?: string
+          impersonation?: Json
+          meeting_types?: Json
+          metrics?: Json
+          modules?: Json
+          promotion?: Json
+          ui_config?: Json
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_config_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_config_log: {
+        Row: {
+          change_type: string
+          changed_by_admin_id: string | null
+          created_at: string
+          id: string
+          new_value: Json | null
+          note: string | null
+          previous_value: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          change_type: string
+          changed_by_admin_id?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          note?: string | null
+          previous_value?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          change_type?: string
+          changed_by_admin_id?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          note?: string | null
+          previous_value?: Json | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_config_log_changed_by_admin_id_fkey"
+            columns: ["changed_by_admin_id"]
+            isOneToOne: false
+            referencedRelation: "legatus_admins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_config_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_roles: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          label: string
+          level: number
+          permissions: Json
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          label: string
+          level: number
+          permissions?: Json
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string
+          level?: number
+          permissions?: Json
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_roles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_templates: {
+        Row: {
+          created_at: string
+          created_by_admin_id: string | null
+          default_follow_up_rules: Json
+          default_meeting_types: Json
+          default_metrics: Json
+          default_modules: Json
+          default_production_unit: Json
+          default_roles: Json
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_admin_id?: string | null
+          default_follow_up_rules?: Json
+          default_meeting_types?: Json
+          default_metrics?: Json
+          default_modules?: Json
+          default_production_unit?: Json
+          default_roles?: Json
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by_admin_id?: string | null
+          default_follow_up_rules?: Json
+          default_meeting_types?: Json
+          default_metrics?: Json
+          default_modules?: Json
+          default_production_unit?: Json
+          default_roles?: Json
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_templates_created_by_admin_id_fkey"
+            columns: ["created_by_admin_id"]
+            isOneToOne: false
+            referencedRelation: "legatus_admins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          frozen_at: string | null
+          id: string
+          name: string
+          owner_user_id: string | null
+          plan: string
+          slug: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          frozen_at?: string | null
+          id?: string
+          name: string
+          owner_user_id?: string | null
+          plan?: string
+          slug: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          frozen_at?: string | null
+          id?: string
+          name?: string
+          owner_user_id?: string | null
+          plan?: string
+          slug?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: { Args: { _user_id: string }; Returns: string }
+      get_user_workspace: { Args: { _user_id: string }; Returns: string }
+      is_in_subtree: {
+        Args: { _root_id: string; _target_id: string }
+        Returns: boolean
+      }
+      is_legatus_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
