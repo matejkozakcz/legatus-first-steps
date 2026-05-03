@@ -17,7 +17,7 @@ interface UserNode {
 interface OrgChartProps {
   periodStart: string;
   periodEnd: string;
-  onImpersonate?: (userId: string) => void;
+  onImpersonate?: (userId: string, name: string) => void;
 }
 
 const LINE = "hsl(var(--border))";
@@ -122,7 +122,7 @@ interface RenderProps {
   roleLabel: (key: string | null) => string;
   roleColor: (key: string | null) => string;
   canImpersonateFn: (n: UserNode) => boolean;
-  onImpersonate?: (id: string) => void;
+  onImpersonate?: (id: string, name: string) => void;
 }
 
 function ChildrenBranch(props: { items: UserNode[] } & Omit<RenderProps, "node" | "depth"> & { depth: number }) {
@@ -188,7 +188,7 @@ function TreeNode(props: RenderProps) {
         roleLabel={roleLabel(node.role_key)}
         roleColor={roleColor(node.role_key)}
         canImpersonate={canImpersonateFn(node)}
-        onImpersonate={() => onImpersonate?.(node.id)}
+        onImpersonate={() => onImpersonate?.(node.id, node.full_name || "—")}
       />
       {kids.length > 0 && (
         <>
