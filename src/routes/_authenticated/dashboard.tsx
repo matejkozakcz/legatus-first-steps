@@ -17,24 +17,49 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { signOut } = useAuth();
+  const { signOut, user: authUser } = useAuth();
+  const navigate = useNavigate();
   const { workspace, user, productionUnit } = useWorkspace();
   const { roles, currentRole } = useRoles();
   const { meetingTypes } = useMeetingTypes();
   const { modules, isModuleEnabled } = useModules();
   const { hasConsent } = useGdprConsent();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!authUser?.id) return;
+    supabase
+      .from("legatus_admins")
+      .select("id")
+      .eq("user_id", authUser.id)
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [authUser?.id]);
+
+  useEffect(() => {
+    if (!workspace && isAdmin) {
+      navigate({ to: "/admin", replace: true });
+    }
+  }, [workspace, isAdmin, navigate]);
 
   if (!workspace) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <Card className="max-w-md">
           <CardHeader>
-            <CardTitle>Žádný workspace</CardTitle>
+            <CardTitle>{isAdmin ? "Přesměrovávám…" : "Žádný workspace"}</CardTitle>
             <CardDescription>
-              Tvůj účet zatím nemá přiřazený workspace. Kontaktuj Legatus admina.
+              {isAdmin
+                ? "Otevírám Legatus Admin Panel."
+                : "Tvůj účet zatím nemá přiřazený workspace. Kontaktuj Legatus admina."}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex gap-2">
+            {isAdmin && (
+              <Button asChild>
+                <Link to="/admin">Otevřít Admin</Link>
+              </Button>
+            )}
             <Button variant="outline" onClick={() => signOut()}>
               Odhlásit se
             </Button>
