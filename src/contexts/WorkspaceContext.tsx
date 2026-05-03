@@ -90,22 +90,22 @@ async function loadWorkspaceConfig(
     supabase
       .from("workspaces")
       .select("*")
-      .eq("id", userRow.workspace_id)
+      .eq("id", effectiveWorkspaceId)
       .single(),
     supabase
       .from("workspace_roles")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id)
+      .eq("workspace_id", effectiveWorkspaceId)
       .order("level", { ascending: true }),
     supabase
       .from("workspace_config")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id)
+      .eq("workspace_id", effectiveWorkspaceId)
       .maybeSingle(),
     supabase
       .from("production_units")
       .select("*")
-      .eq("workspace_id", userRow.workspace_id),
+      .eq("workspace_id", effectiveWorkspaceId),
   ]);
 
   if (wsErr) throw wsErr;
