@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useRoles } from "@/hooks/useRoles";
 import { Button } from "@/components/ui/button";
+import { paletteForLevel } from "./RoleBadge";
 
 interface UserNode {
   id: string;
@@ -331,12 +332,11 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
   }, [roles]);
 
   const roleLabel = (key: string | null) => (key && roleByKey.get(key)?.label) || "—";
-  const palette = ["hsl(var(--primary))", "hsl(180 60% 40%)", "hsl(150 55% 42%)", "hsl(265 50% 55%)", "hsl(30 85% 55%)"];
   const roleColor = (key: string | null) => {
-    if (!key) return "hsl(var(--muted-foreground))";
+    if (!key) return "#89ADB4";
     const r = roleByKey.get(key);
-    if (!r) return "hsl(var(--muted-foreground))";
-    return palette[Math.min(r.level - 1, palette.length - 1)] || palette[0];
+    if (!r) return "#89ADB4";
+    return paletteForLevel(r.level).dot;
   };
 
   const toggle = (id: string) => {
