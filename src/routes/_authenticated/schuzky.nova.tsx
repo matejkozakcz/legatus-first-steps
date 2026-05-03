@@ -192,10 +192,16 @@ function NewMeetingPage() {
     }
 
     toast.success(cancelled ? "Schůzka uložena jako zrušená" : "Schůzka vytvořena");
-    setCreatedMeetingId((data as { id: string }).id);
+    const created = data as { id: string };
     if (cancelled) {
       navigate({ to: "/dashboard" });
     } else {
+      setCreatedMeeting({
+        id: created.id,
+        type_key: typeKey,
+        scheduled_at: payload.scheduled_at,
+        person_id: payload.person_id,
+      });
       setFollowUpOpen(true);
     }
   }
