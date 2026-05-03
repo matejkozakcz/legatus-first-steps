@@ -279,6 +279,31 @@ function MeetingDetailPage() {
           />
         )}
 
+        {source && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Zdroj</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm">
+              Schůzka vznikla z{" "}
+              {source.event_id ? (
+                <Link
+                  to="/call-party/events/$id"
+                  params={{ id: source.event_id }}
+                  className="text-primary hover:underline"
+                >
+                  skupinové Call Party
+                </Link>
+              ) : (
+                <Link to="/call-party" className="text-primary hover:underline">
+                  Call Party session
+                </Link>
+              )}
+              .
+            </CardContent>
+          </Card>
+        )}
+
         {meeting?.parent && (
           <Card>
             <CardHeader>
