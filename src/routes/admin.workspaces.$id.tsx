@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Copy, RefreshCw, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/workspaces/$id")({
@@ -30,6 +31,7 @@ interface Workspace {
   status: string;
   plan: string;
   created_at: string;
+  invite_token: string | null;
 }
 
 interface ConfigRow {
@@ -60,6 +62,32 @@ function WorkspaceDetail() {
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [saving, setSaving] = useState<FieldKey | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [rotatingToken, setRotatingToken] = useState(false);
+
+  const inviteUrl = workspace?.invite_token
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/join/${workspace.invite_token}`
+    : "";
+
+  const rotateToken = async () => {
+    if (!workspace) return;
+    setRotatingToken(true);
+    const { data, error } = await supabase.rpc("rotate_workspace_invite_token", {
+      _workspace_id: workspace.id,
+    });
+    setRotatingToken(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Token rotován");
+    setWorkspace({ ...workspace, invite_token: data as string });
+  };
+
+  const copyInvite = () => {
+    if (!inviteUrl) return;
+    navigator.clipboard.writeText(inviteUrl);
+    toast.success("Zkopírováno");
+  };
 
   const reload = async () => {
     try {
@@ -159,6 +187,49 @@ function WorkspaceDetail() {
           <Meta label="Plan" value={workspace.plan} />
           <Meta label="Vytvořeno" value={new Date(workspace.created_at).toLocaleDateString("cs-CZ")} />
           <Meta label="Production Units" value={String(prodUnits.length)} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Pozvánka</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid gap-2 sm:grid-cols-[140px_1fr_auto] sm:items-end">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Token
+              </p>
+              <Input
+                value={workspace.invite_token ?? ""}
+                readOnly
+                className="font-mono"
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Plný odkaz
+              </p>
+              <Input value={inviteUrl} readOnly />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={copyInvite}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={rotateToken}
+                disabled={rotatingToken}
+              >
+                {rotatingToken ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Rotovat
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

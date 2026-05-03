@@ -14,7 +14,9 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
+import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
@@ -22,6 +24,7 @@ import { Route as AuthenticatedSchuzkyIndexRouteImport } from './routes/_authent
 import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
 import { Route as AuthenticatedSchuzkyNovaRouteImport } from './routes/_authenticated/schuzky.nova'
 import { Route as AuthenticatedSchuzkyIdRouteImport } from './routes/_authenticated/schuzky.$id'
+import { Route as AuthenticatedNastaveniTymRouteImport } from './routes/_authenticated/nastaveni.tym'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -47,10 +50,20 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/join/$token',
+  path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
   getParentRoute: () => AdminRoute,
+} as any)
+const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
@@ -89,6 +102,12 @@ const AuthenticatedSchuzkyIdRoute = AuthenticatedSchuzkyIdRouteImport.update({
   path: '/schuzky/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedNastaveniTymRoute =
+  AuthenticatedNastaveniTymRouteImport.update({
+    id: '/nastaveni/tym',
+    path: '/nastaveni/tym',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,8 +115,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/setup': typeof AuthenticatedSetupRoute
   '/admin/templates': typeof AdminTemplatesRoute
+  '/join/$token': typeof JoinTokenRoute
   '/admin/': typeof AdminIndexRoute
+  '/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
@@ -109,8 +131,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/setup': typeof AuthenticatedSetupRoute
   '/admin/templates': typeof AdminTemplatesRoute
+  '/join/$token': typeof JoinTokenRoute
   '/admin': typeof AdminIndexRoute
+  '/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
@@ -125,8 +150,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/setup': typeof AuthenticatedSetupRoute
   '/admin/templates': typeof AdminTemplatesRoute
+  '/join/$token': typeof JoinTokenRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/_authenticated/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/_authenticated/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
@@ -141,8 +169,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/settings'
+    | '/setup'
     | '/admin/templates'
+    | '/join/$token'
     | '/admin/'
+    | '/nastaveni/tym'
     | '/schuzky/$id'
     | '/schuzky/nova'
     | '/admin/workspaces/$id'
@@ -154,8 +185,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/settings'
+    | '/setup'
     | '/admin/templates'
+    | '/join/$token'
     | '/admin'
+    | '/nastaveni/tym'
     | '/schuzky/$id'
     | '/schuzky/nova'
     | '/admin/workspaces/$id'
@@ -169,8 +203,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
+    | '/_authenticated/setup'
     | '/admin/templates'
+    | '/join/$token'
     | '/admin/'
+    | '/_authenticated/nastaveni/tym'
     | '/_authenticated/schuzky/$id'
     | '/_authenticated/schuzky/nova'
     | '/admin/workspaces/$id'
@@ -183,6 +220,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  JoinTokenRoute: typeof JoinTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -222,12 +260,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/join/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/templates': {
       id: '/admin/templates'
       path: '/templates'
       fullPath: '/admin/templates'
       preLoaderRoute: typeof AdminTemplatesRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_authenticated/setup': {
+      id: '/_authenticated/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof AuthenticatedSetupRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -278,12 +330,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSchuzkyIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/nastaveni/tym': {
+      id: '/_authenticated/nastaveni/tym'
+      path: '/nastaveni/tym'
+      fullPath: '/nastaveni/tym'
+      preLoaderRoute: typeof AuthenticatedNastaveniTymRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
+  AuthenticatedNastaveniTymRoute: typeof AuthenticatedNastaveniTymRoute
   AuthenticatedSchuzkyIdRoute: typeof AuthenticatedSchuzkyIdRoute
   AuthenticatedSchuzkyNovaRoute: typeof AuthenticatedSchuzkyNovaRoute
   AuthenticatedSchuzkyIndexRoute: typeof AuthenticatedSchuzkyIndexRoute
@@ -292,6 +353,8 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSetupRoute: AuthenticatedSetupRoute,
+  AuthenticatedNastaveniTymRoute: AuthenticatedNastaveniTymRoute,
   AuthenticatedSchuzkyIdRoute: AuthenticatedSchuzkyIdRoute,
   AuthenticatedSchuzkyNovaRoute: AuthenticatedSchuzkyNovaRoute,
   AuthenticatedSchuzkyIndexRoute: AuthenticatedSchuzkyIndexRoute,
@@ -322,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  JoinTokenRoute: JoinTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

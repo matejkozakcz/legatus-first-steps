@@ -541,6 +541,7 @@ export type Database = {
           created_at: string
           frozen_at: string | null
           id: string
+          invite_token: string
           name: string
           owner_user_id: string | null
           plan: string
@@ -551,6 +552,7 @@ export type Database = {
           created_at?: string
           frozen_at?: string | null
           id?: string
+          invite_token: string
           name: string
           owner_user_id?: string | null
           plan?: string
@@ -561,6 +563,7 @@ export type Database = {
           created_at?: string
           frozen_at?: string | null
           id?: string
+          invite_token?: string
           name?: string
           owner_user_id?: string | null
           plan?: string
@@ -574,13 +577,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_workspace_invite: { Args: { _token: string }; Returns: string }
+      complete_workspace_setup: {
+        Args: { _name: string; _workspace_id: string }
+        Returns: undefined
+      }
+      gen_invite_token: { Args: never; Returns: string }
       get_user_role: { Args: { _user_id: string }; Returns: string }
       get_user_workspace: { Args: { _user_id: string }; Returns: string }
+      get_workspace_by_invite_token: {
+        Args: { _token: string }
+        Returns: {
+          default_role_key: string
+          id: string
+          name: string
+          status: string
+        }[]
+      }
       is_in_subtree: {
         Args: { _root_id: string; _target_id: string }
         Returns: boolean
       }
       is_legatus_admin: { Args: { _user_id: string }; Returns: boolean }
+      rotate_workspace_invite_token: {
+        Args: { _workspace_id: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
