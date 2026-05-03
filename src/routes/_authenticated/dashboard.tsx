@@ -7,6 +7,8 @@ import { useModules } from "@/hooks/useModules";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GdprConsentModal, useGdprConsent } from "@/components/GdprConsentModal";
+import { Plus, UserPlus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -18,6 +20,7 @@ function Dashboard() {
   const { roles, currentRole } = useRoles();
   const { meetingTypes } = useMeetingTypes();
   const { modules, isModuleEnabled } = useModules();
+  const { hasConsent } = useGdprConsent();
 
   if (!workspace) {
     return (
@@ -41,6 +44,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <GdprConsentModal />
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div>
@@ -49,9 +53,17 @@ function Dashboard() {
               {user?.full_name} · {currentRole?.label ?? "—"}
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => signOut()}>
-            Odhlásit se
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" disabled={!hasConsent} title={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}>
+              <Plus className="mr-1 h-4 w-4" /> Schůzka
+            </Button>
+            <Button size="sm" variant="secondary" disabled={!hasConsent} title={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}>
+              <UserPlus className="mr-1 h-4 w-4" /> Kontakt
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => signOut()}>
+              Odhlásit se
+            </Button>
+          </div>
         </div>
       </header>
 
