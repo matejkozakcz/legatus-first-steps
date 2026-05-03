@@ -90,6 +90,51 @@ export type Database = {
         }
         Relationships: []
       }
+      people: {
+        Row: {
+          created_at: string
+          created_by: string
+          full_name: string
+          gdpr_consented_at: string | null
+          id: string
+          note: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          full_name: string
+          gdpr_consented_at?: string | null
+          id?: string
+          note?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          full_name?: string
+          gdpr_consented_at?: string | null
+          id?: string
+          note?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "people_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "people_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       production_units: {
         Row: {
           created_at: string
