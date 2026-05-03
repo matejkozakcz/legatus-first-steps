@@ -14,6 +14,7 @@ import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
+import { useNewMeetingModal } from "@/components/NewMeetingModal";
 import { addWeeks, addMonths } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
