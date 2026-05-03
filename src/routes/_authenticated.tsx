@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/hooks/useWorkspace";
@@ -10,14 +10,27 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const { user, isLoading: authLoading } = useAuth();
-  const { isLoading: wsLoading, error } = useWorkspace();
+  const { workspace, isLoading: wsLoading, error } = useWorkspace();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate({ to: "/auth", replace: true });
     }
   }, [user, authLoading, navigate]);
+
+  // Redirect owner of inactive workspace to /setup
+  useEffect(() => {
+    if (!user || !workspace) return;
+    const isOwner = workspace.owner_user_id === user.id;
+    const onSetup = location.pathname === "/setup";
+    if (isOwner && workspace.status !== "active" && !onSetup) {
+      navigate({ to: "/setup", replace: true });
+    } else if (workspace.status === "active" && onSetup) {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }, [user, workspace, location.pathname, navigate]);
 
   if (authLoading || (user && wsLoading)) {
     return (
@@ -41,3 +54,4 @@ function AuthenticatedLayout() {
 
   return <Outlet />;
 }
+
