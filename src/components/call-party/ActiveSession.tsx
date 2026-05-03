@@ -233,7 +233,7 @@ export function ActiveSession({
           result,
           note: note.trim() || null,
           meeting_id: meetingId,
-          pending_meeting: pending,
+          pending_meeting: pending as never,
         })
         .select()
         .single();
