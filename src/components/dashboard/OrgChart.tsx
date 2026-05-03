@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useRoles } from "@/hooks/useRoles";
 import { Button } from "@/components/ui/button";
+import { paletteForLevel } from "./RoleBadge";
 
 interface UserNode {
   id: string;
@@ -47,12 +48,33 @@ function NodeCard({
 
   return (
     <div
-      className="relative flex flex-col items-center rounded-xl border bg-card shadow-sm flex-shrink-0"
-      style={{ width: 160, paddingTop: 10, paddingBottom: 14, borderTopColor: roleColor, borderTopWidth: 2 }}
+      className="relative flex flex-col items-center flex-shrink-0 bg-card dark:bg-white/[0.05]"
+      style={{
+        width: 160,
+        minHeight: 110,
+        borderRadius: 12,
+        border: "1px solid hsl(var(--border))",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        paddingTop: 10,
+        paddingBottom: 14,
+        overflow: "hidden",
+      }}
     >
       <div
-        className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 text-white"
-        style={{ background: roleColor }}
+        className="absolute"
+        style={{
+          top: 8, left: 8,
+          padding: "2px 8px",
+          borderRadius: 20,
+          background: roleColor,
+          fontSize: 9,
+          fontWeight: 700,
+          color: "#fff",
+          letterSpacing: 0.3,
+          lineHeight: "16px",
+          whiteSpace: "nowrap",
+          textTransform: "uppercase",
+        }}
       >
         {roleLabel}
       </div>
@@ -61,33 +83,34 @@ function NodeCard({
           type="button"
           onClick={(e) => { e.stopPropagation(); onImpersonate?.(); }}
           title="Zobrazit pohled uživatele"
-          className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+          className="absolute text-muted-foreground hover:text-foreground transition-colors"
+          style={{ top: 8, right: 8, background: "transparent", border: "none", lineHeight: 0, padding: 0 }}
         >
           <Eye className="h-4 w-4" />
         </button>
       )}
-      <div className="mt-3.5">
+      <div style={{ marginTop: 14 }}>
         {node.avatar_url ? (
           <img
             src={node.avatar_url}
             alt={node.full_name || ""}
             loading="lazy"
-            className="rounded-full object-cover border-2 border-background shadow"
-            style={{ width: 56, height: 56 }}
+            className="rounded-full object-cover"
+            style={{ width: 56, height: 56, border: "2px solid white", boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
           />
         ) : (
           <div
-            className="rounded-full flex items-center justify-center border-2 border-background shadow font-semibold"
-            style={{ width: 56, height: 56, background: "hsl(var(--muted))", color: "hsl(var(--foreground))", fontSize: 18 }}
+            className="rounded-full flex items-center justify-center font-semibold"
+            style={{ width: 56, height: 56, background: "hsl(var(--muted))", color: "hsl(var(--foreground))", fontSize: 18, border: "2px solid white", boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
           >
             {initials}
           </div>
         )}
       </div>
-      <p className="font-semibold text-center leading-tight px-2 mt-2" style={{ fontSize: 13 }}>
+      <p className="font-heading font-semibold text-center leading-tight px-2 mt-2 text-foreground" style={{ fontSize: 13 }}>
         {node.full_name || "—"}
       </p>
-      <p className="text-center font-semibold mt-0.5" style={{ fontSize: 11, color: roleColor }}>
+      <p className="text-center font-heading font-semibold mt-0.5" style={{ fontSize: 11, color: roleColor }}>
         {bj.toLocaleString("cs-CZ")} BJ tým
       </p>
     </div>
@@ -309,12 +332,11 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
   }, [roles]);
 
   const roleLabel = (key: string | null) => (key && roleByKey.get(key)?.label) || "—";
-  const palette = ["hsl(var(--primary))", "hsl(180 60% 40%)", "hsl(150 55% 42%)", "hsl(265 50% 55%)", "hsl(30 85% 55%)"];
   const roleColor = (key: string | null) => {
-    if (!key) return "hsl(var(--muted-foreground))";
+    if (!key) return "#89ADB4";
     const r = roleByKey.get(key);
-    if (!r) return "hsl(var(--muted-foreground))";
-    return palette[Math.min(r.level - 1, palette.length - 1)] || palette[0];
+    if (!r) return "#89ADB4";
+    return paletteForLevel(r.level).dot;
   };
 
   const toggle = (id: string) => {

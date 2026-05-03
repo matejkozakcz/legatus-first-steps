@@ -9,10 +9,12 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GdprConsentModal, useGdprConsent } from "@/components/GdprConsentModal";
-import { Plus, FileDown, Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, FileDown, Bell } from "lucide-react";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
+import { PeriodNavigator } from "@/components/dashboard/PeriodNavigator";
+import { ActivityCard } from "@/components/dashboard/ActivityCard";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
 import { addWeeks, addMonths } from "date-fns";
@@ -183,45 +185,23 @@ function Dashboard() {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="px-6 py-4 flex items-center gap-4 flex-wrap">
-          {/* Left: title + week/month tabs */}
-          <div className="flex items-center gap-4">
-            <h1
-              className="font-heading font-bold tracking-[0.2em] text-[#00555f] dark:text-white"
-              style={{ fontSize: 22 }}
-            >
-              DASHBOARD
-            </h1>
-            <div className="inline-flex rounded-xl border bg-card p-1">
-              {(["week", "month"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors ${
-                    mode === m
-                      ? "bg-[#00abbd] text-white"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {m === "week" ? "Týden" : "Měsíc"}
-                </button>
-              ))}
-            </div>
+          <h1
+            className="font-heading font-bold tracking-[0.2em] text-[#00555f] dark:text-white"
+            style={{ fontSize: 22 }}
+          >
+            DASHBOARD
+          </h1>
+
+          <div className="flex-1 flex items-center justify-center">
+            <PeriodNavigator
+              mode={mode}
+              setMode={setMode}
+              label={period.label}
+              onPrev={() => shift(-1)}
+              onNext={() => shift(1)}
+            />
           </div>
 
-          {/* Center: period navigator */}
-          <div className="flex-1 flex items-center justify-center gap-2">
-            <Button size="icon" variant="ghost" onClick={() => shift(-1)}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="min-w-[180px] text-center text-sm font-heading font-semibold text-foreground">
-              {period.label}
-            </span>
-            <Button size="icon" variant="ghost" onClick={() => shift(1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Right: actions */}
           <div className="flex items-center gap-2">
             <Button
               disabled={!hasConsent || isImpersonating}
@@ -288,36 +268,13 @@ function Dashboard() {
             {meetingTypes.map((t) => {
               const stats = activityByType.get(t.key) ?? { scheduled: 0, completed: 0, referrals: 0 };
               return (
-                <Card key={t.key} style={{ borderTop: `3px solid ${t.color}` }}>
-                  <CardContent className="pt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className="text-[11px] font-bold uppercase tracking-wider"
-                        style={{ color: t.color }}
-                      >
-                        {t.label}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                          Domluvené
-                        </div>
-                        <div className="font-heading font-bold text-2xl text-foreground mt-1">
-                          {stats.scheduled}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                          Proběhlé
-                        </div>
-                        <div className="font-heading font-bold text-2xl mt-1" style={{ color: t.color }}>
-                          {stats.completed}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ActivityCard
+                  key={t.key}
+                  label={t.label}
+                  color={t.color}
+                  scheduled={stats.scheduled}
+                  completed={stats.completed}
+                />
               );
             })}
           </div>

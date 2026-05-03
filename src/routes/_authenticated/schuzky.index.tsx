@@ -8,10 +8,10 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { useRoles } from "@/hooks/useRoles";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
 import { useMeetingDetailModal } from "@/components/MeetingDetailModal";
+import { MeetingCard } from "@/components/dashboard/MeetingCard";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Tabs,
   TabsList,
@@ -213,50 +213,19 @@ function MeetingsListPage() {
 
         <div className="space-y-3">
           {cards.map((m) => (
-            <button
+            <MeetingCard
               key={m.id}
-              type="button"
+              id={m.id}
+              typeLabel={m.label}
+              typeColor={m.color}
+              scheduledAt={m.date}
+              status={m.status}
+              personName={m.person?.full_name ?? null}
+              ownerName={m.user?.full_name ?? null}
+              location={m.location}
+              showOwner={effectiveScope === "team"}
               onClick={() => openDetail(m.id)}
-              className="block w-full text-left"
-            >
-              <Card
-                className="overflow-hidden border-l-4 transition-colors hover:bg-accent/40"
-                style={{ borderLeftColor: m.color }}
-              >
-                <CardContent className="flex flex-wrap items-start justify-between gap-3 py-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="inline-block h-2 w-2 rounded-full"
-                        style={{ backgroundColor: m.color }}
-                      />
-                      <span className="font-medium">{m.label}</span>
-                      {effectiveScope === "team" && m.user?.full_name && (
-                        <span className="text-xs text-muted-foreground">
-                          · {m.user.full_name}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <UserIcon className="h-3 w-3" />
-                        {m.person?.full_name ?? "—"}
-                      </span>
-                      <span>{format(m.date, "dd.MM.yyyy HH:mm")}</span>
-                      {m.location && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {m.location}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <Badge variant={STATUS_VARIANT[m.status]}>
-                    {STATUS_LABEL[m.status]}
-                  </Badge>
-                </CardContent>
-              </Card>
-            </button>
+            />
           ))}
         </div>
       </main>
