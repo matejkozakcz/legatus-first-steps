@@ -42,14 +42,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { FollowUpMeetingModal } from "@/components/FollowUpMeetingModal";
 
 export const Route = createFileRoute("/_authenticated/schuzky/nova")({
   component: NewMeetingPage,
