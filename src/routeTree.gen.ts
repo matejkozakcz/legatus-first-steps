@@ -19,6 +19,7 @@ import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCallPartyRouteImport } from './routes/_authenticated/call-party'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
 import { Route as AuthenticatedSchuzkyIndexRouteImport } from './routes/_authenticated/schuzky.index'
 import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
@@ -75,6 +76,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCallPartyRoute = AuthenticatedCallPartyRouteImport.update({
+  id: '/call-party',
+  path: '/call-party',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AdminWorkspacesIndexRoute = AdminWorkspacesIndexRouteImport.update({
   id: '/workspaces/',
   path: '/workspaces/',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/call-party': typeof AuthenticatedCallPartyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/call-party': typeof AuthenticatedCallPartyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/call-party': typeof AuthenticatedCallPartyRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/call-party'
     | '/dashboard'
     | '/settings'
     | '/setup'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/call-party'
     | '/dashboard'
     | '/settings'
     | '/setup'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/admin'
     | '/auth'
+    | '/_authenticated/call-party'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/_authenticated/setup'
@@ -295,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/call-party': {
+      id: '/_authenticated/call-party'
+      path: '/call-party'
+      fullPath: '/call-party'
+      preLoaderRoute: typeof AuthenticatedCallPartyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/admin/workspaces/': {
       id: '/admin/workspaces/'
       path: '/workspaces'
@@ -341,6 +360,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCallPartyRoute: typeof AuthenticatedCallPartyRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
@@ -351,6 +371,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCallPartyRoute: AuthenticatedCallPartyRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,
