@@ -1,15 +1,14 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/admin")({
-  component: AdminGate,
+  component: AdminLayout,
 });
 
-function AdminGate() {
+function AdminLayout() {
   const { user, isLoading: authLoading, signOut } = useAuth();
   const { isLegatusAdmin, isLoading: wsLoading } = useWorkspace();
   const navigate = useNavigate();
@@ -37,29 +36,37 @@ function AdminGate() {
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-xl font-semibold">Legatus Admin</h1>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
+          <div className="flex items-center gap-6">
+            <Link to="/admin/workspaces" className="text-xl font-semibold">
+              Legatus Admin
+            </Link>
+            <nav className="flex gap-4 text-sm">
+              <Link
+                to="/admin/workspaces"
+                activeProps={{ className: "font-medium text-foreground" }}
+                inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+              >
+                Workspaces
+              </Link>
+              <Link
+                to="/admin/templates"
+                activeProps={{ className: "font-medium text-foreground" }}
+                inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+              >
+                Templates
+              </Link>
+            </nav>
           </div>
-          <Button variant="outline" size="sm" onClick={() => signOut()}>
-            Odhlásit se
-          </Button>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">{user.email}</span>
+            <Button variant="outline" size="sm" onClick={() => signOut()}>
+              Odhlásit
+            </Button>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Admin Panel</CardTitle>
-            <CardDescription>
-              Tady bude seznam workspaců, šablony a config editor (Krok 4).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link to="/dashboard" className="text-sm underline">
-              Přejít na workspace dashboard
-            </Link>
-          </CardContent>
-        </Card>
+        <Outlet />
       </main>
     </div>
   );
