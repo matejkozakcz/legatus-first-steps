@@ -164,7 +164,12 @@ function EventDetailPage() {
       <LiveStats eventId={event.id} />
 
       {summary ? (
-        <SessionSummary data={summary} onReset={() => setSummary(null)} />
+        <SessionSummary
+          data={summary}
+          workspaceId={workspace!.id}
+          userId={user!.id}
+          onReset={() => setSummary(null)}
+        />
       ) : mySession ? (
         <ActiveSession
           session={mySession}
@@ -174,6 +179,7 @@ function EventDetailPage() {
           userId={user!.id}
           onFinish={finish}
           finishing={finishing}
+          fillMode={fillMode}
         />
       ) : (
         <Card>
