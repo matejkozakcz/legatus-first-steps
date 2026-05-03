@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
@@ -27,12 +27,14 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useRoles } from "@/hooks/useRoles";
 import { supabase } from "@/integrations/supabase/client";
+import { useSettingsModal } from "@/components/SettingsModal";
 import legatusLogo from "@/assets/legatus-logo-white.png";
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const navigate = useNavigate();
+  
+  const { open: openSettings } = useSettingsModal();
   const { user: authUser, signOut } = useAuth();
   const { user: profile } = useWorkspace();
   const { currentRole } = useRoles();
@@ -167,7 +169,7 @@ export function AppSidebar() {
             {!collapsed && <span>{theme === "dark" ? "Světlý režim" : "Tmavý režim"}</span>}
           </button>
           <button
-            onClick={() => navigate({ to: "/settings" })}
+            onClick={() => openSettings()}
             className="nav-item w-full"
             title="Nastavení"
           >

@@ -7,6 +7,7 @@ import { useWorkspace } from "@/hooks/useWorkspace";
 import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { useRoles } from "@/hooks/useRoles";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
+import { useMeetingDetailModal } from "@/components/MeetingDetailModal";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,6 +72,7 @@ function MeetingsListPage() {
   const { getMeetingType } = useMeetingTypes();
   const { currentLevel } = useRoles();
   const { open: openNewMeeting } = useNewMeetingModal();
+  const { open: openDetail } = useMeetingDetailModal();
 
   const isLeader = currentLevel != null && currentLevel <= 2;
 
@@ -211,11 +213,11 @@ function MeetingsListPage() {
 
         <div className="space-y-3">
           {cards.map((m) => (
-            <Link
+            <button
               key={m.id}
-              to="/schuzky/$id"
-              params={{ id: m.id }}
-              className="block"
+              type="button"
+              onClick={() => openDetail(m.id)}
+              className="block w-full text-left"
             >
               <Card
                 className="overflow-hidden border-l-4 transition-colors hover:bg-accent/40"
@@ -254,7 +256,7 @@ function MeetingsListPage() {
                   </Badge>
                 </CardContent>
               </Card>
-            </Link>
+            </button>
           ))}
         </div>
       </main>
