@@ -599,6 +599,7 @@ export type Database = {
         Returns: boolean
       }
       is_legatus_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_super_legatus_admin: { Args: { _user_id: string }; Returns: boolean }
       rotate_workspace_invite_token: {
         Args: { _workspace_id: string }
         Returns: string
