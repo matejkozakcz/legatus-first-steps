@@ -54,8 +54,21 @@ async function loadWorkspaceConfig(
   const isLegatusAdmin = !!adminRow;
 
   if (!userRow.workspace_id) {
-    // User without workspace (e.g. fresh Legatus admin) — return minimal stub
-    return null;
+    // User without workspace (e.g. fresh Legatus admin) — preserve admin flag
+    return {
+      workspace: null as unknown as Workspace,
+      user: userRow as WorkspaceUser,
+      roles: [],
+      meetingTypes: [],
+      followUpRules: {} as FollowUpRules,
+      metrics: [],
+      productionUnit: null,
+      modules: {} as ModulesConfig,
+      promotion: {} as PromotionConfig,
+      impersonation: { enabled: false } as ImpersonationConfig,
+      uiConfig: {},
+      isLegatusAdmin,
+    };
   }
 
   // 3. Load workspace, roles, config, production unit in parallel
