@@ -162,7 +162,7 @@ function TemplateDialog({
         name: name.trim(),
         description: description?.trim() || null,
         ...templateToDb(data),
-      };
+      } as never;
       if (mode === "create") {
         const { error } = await supabase.from("workspace_templates").insert(payload);
         if (error) throw error;
