@@ -62,6 +62,32 @@ function WorkspaceDetail() {
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [saving, setSaving] = useState<FieldKey | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [rotatingToken, setRotatingToken] = useState(false);
+
+  const inviteUrl = workspace?.invite_token
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/join/${workspace.invite_token}`
+    : "";
+
+  const rotateToken = async () => {
+    if (!workspace) return;
+    setRotatingToken(true);
+    const { data, error } = await supabase.rpc("rotate_workspace_invite_token", {
+      _workspace_id: workspace.id,
+    });
+    setRotatingToken(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Token rotován");
+    setWorkspace({ ...workspace, invite_token: data as string });
+  };
+
+  const copyInvite = () => {
+    if (!inviteUrl) return;
+    navigator.clipboard.writeText(inviteUrl);
+    toast.success("Zkopírováno");
+  };
 
   const reload = async () => {
     try {
