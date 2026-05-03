@@ -3,6 +3,8 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
+import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
+import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 
 function NotFoundComponent() {
   return (
@@ -70,7 +72,10 @@ function RootComponent() {
   return (
     <AuthProvider>
       <WorkspaceProvider>
-        <Outlet />
+        <ImpersonationProvider>
+          <ImpersonationBanner />
+          <Outlet />
+        </ImpersonationProvider>
       </WorkspaceProvider>
     </AuthProvider>
   );
