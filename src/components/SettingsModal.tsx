@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -115,5 +115,3 @@ function SettingsModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v
   );
 }
 
-/* eslint-disable react-hooks/exhaustive-deps */
-export function _noop() { useEffect(() => {}, []); }
