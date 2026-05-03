@@ -16,7 +16,7 @@ interface WorkspaceRow {
   member_count: number;
 }
 
-export const Route = createFileRoute("/admin/workspaces")({
+export const Route = createFileRoute("/admin/workspaces/")({
   component: WorkspacesList,
 });
 
