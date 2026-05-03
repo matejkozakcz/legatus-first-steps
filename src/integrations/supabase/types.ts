@@ -90,6 +90,96 @@ export type Database = {
         }
         Relationships: []
       }
+      meetings: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          follow_up_meeting_id: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          parent_meeting_id: string | null
+          person_id: string | null
+          result: Json | null
+          scheduled_at: string
+          status: string
+          type_key: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          follow_up_meeting_id?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          parent_meeting_id?: string | null
+          person_id?: string | null
+          result?: Json | null
+          scheduled_at: string
+          status?: string
+          type_key: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          follow_up_meeting_id?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          parent_meeting_id?: string | null
+          person_id?: string | null
+          result?: Json | null
+          scheduled_at?: string
+          status?: string
+          type_key?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_follow_up_meeting_id_fkey"
+            columns: ["follow_up_meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_parent_meeting_id_fkey"
+            columns: ["parent_meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       people: {
         Row: {
           created_at: string
