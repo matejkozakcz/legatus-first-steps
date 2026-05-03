@@ -19,6 +19,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
 import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
+import { Route as AuthenticatedSchuzkyNovaRouteImport } from './routes/_authenticated/schuzky.nova'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -69,6 +70,12 @@ const AdminWorkspacesIdRoute = AdminWorkspacesIdRouteImport.update({
   path: '/workspaces/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AuthenticatedSchuzkyNovaRoute =
+  AuthenticatedSchuzkyNovaRouteImport.update({
+    id: '/schuzky/nova',
+    path: '/schuzky/nova',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
+  '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
@@ -88,6 +96,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin': typeof AdminIndexRoute
+  '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces': typeof AdminWorkspacesIndexRoute
 }
@@ -101,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
 }
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/admin/templates'
     | '/admin/'
+    | '/schuzky/nova'
     | '/admin/workspaces/$id'
     | '/admin/workspaces/'
   fileRoutesByTo: FileRoutesByTo
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/admin/templates'
     | '/admin'
+    | '/schuzky/nova'
     | '/admin/workspaces/$id'
     | '/admin/workspaces'
   id:
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/admin/templates'
     | '/admin/'
+    | '/_authenticated/schuzky/nova'
     | '/admin/workspaces/$id'
     | '/admin/workspaces/'
   fileRoutesById: FileRoutesById
@@ -219,17 +232,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWorkspacesIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_authenticated/schuzky/nova': {
+      id: '/_authenticated/schuzky/nova'
+      path: '/schuzky/nova'
+      fullPath: '/schuzky/nova'
+      preLoaderRoute: typeof AuthenticatedSchuzkyNovaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSchuzkyNovaRoute: typeof AuthenticatedSchuzkyNovaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSchuzkyNovaRoute: AuthenticatedSchuzkyNovaRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
