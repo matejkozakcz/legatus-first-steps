@@ -19,6 +19,7 @@ import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCileRouteImport } from './routes/_authenticated/cile'
 import { Route as AuthenticatedCallPartyRouteImport } from './routes/_authenticated/call-party'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
 import { Route as AuthenticatedSchuzkyIndexRouteImport } from './routes/_authenticated/schuzky.index'
@@ -77,6 +78,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCileRoute = AuthenticatedCileRouteImport.update({
+  id: '/cile',
+  path: '/cile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCallPartyRoute = AuthenticatedCallPartyRouteImport.update({
   id: '/call-party',
   path: '/call-party',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/call-party': typeof AuthenticatedCallPartyRouteWithChildren
+  '/cile': typeof AuthenticatedCileRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/call-party': typeof AuthenticatedCallPartyRouteWithChildren
+  '/cile': typeof AuthenticatedCileRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/call-party': typeof AuthenticatedCallPartyRouteWithChildren
+  '/_authenticated/cile': typeof AuthenticatedCileRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/call-party'
+    | '/cile'
     | '/dashboard'
     | '/settings'
     | '/setup'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/call-party'
+    | '/cile'
     | '/dashboard'
     | '/settings'
     | '/setup'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/_authenticated/call-party'
+    | '/_authenticated/cile'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/_authenticated/setup'
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cile': {
+      id: '/_authenticated/cile'
+      path: '/cile'
+      fullPath: '/cile'
+      preLoaderRoute: typeof AuthenticatedCileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/call-party': {
       id: '/_authenticated/call-party'
       path: '/call-party'
@@ -395,6 +414,7 @@ const AuthenticatedCallPartyRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedCallPartyRoute: typeof AuthenticatedCallPartyRouteWithChildren
+  AuthenticatedCileRoute: typeof AuthenticatedCileRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
@@ -406,6 +426,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCallPartyRoute: AuthenticatedCallPartyRouteWithChildren,
+  AuthenticatedCileRoute: AuthenticatedCileRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,

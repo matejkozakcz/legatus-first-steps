@@ -178,33 +178,45 @@ export type Database = {
       goals: {
         Row: {
           created_at: string
+          current_value: number
+          goal_type: string
           id: string
           metric_key: string
+          period_end: string | null
           period_start: string
           period_type: string
           target_value: number
+          title: string | null
           updated_at: string
           user_id: string
           workspace_id: string
         }
         Insert: {
           created_at?: string
+          current_value?: number
+          goal_type?: string
           id?: string
           metric_key: string
+          period_end?: string | null
           period_start: string
           period_type: string
           target_value?: number
+          title?: string | null
           updated_at?: string
           user_id: string
           workspace_id: string
         }
         Update: {
           created_at?: string
+          current_value?: number
+          goal_type?: string
           id?: string
           metric_key?: string
+          period_end?: string | null
           period_start?: string
           period_type?: string
           target_value?: number
+          title?: string | null
           updated_at?: string
           user_id?: string
           workspace_id?: string
