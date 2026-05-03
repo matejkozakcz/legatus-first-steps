@@ -94,6 +94,7 @@ function MeetingDetailPage() {
 
   const [meeting, setMeeting] = useState<MeetingFull | null>(null);
   const [children, setChildren] = useState<ChildMeeting[]>([]);
+  const [source, setSource] = useState<{ session_id: string; event_id: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
