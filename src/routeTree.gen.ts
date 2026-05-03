@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
 import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
@@ -42,6 +43,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
   '/admin': typeof AdminIndexRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces': typeof AdminWorkspacesIndexRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
   '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/dashboard'
+    | '/admin/templates'
     | '/admin/'
     | '/admin/workspaces/$id'
     | '/admin/workspaces/'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/admin/templates'
     | '/admin'
     | '/admin/workspaces/$id'
     | '/admin/workspaces'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/admin/templates'
     | '/admin/'
     | '/admin/workspaces/$id'
     | '/admin/workspaces/'
@@ -160,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/templates': {
+      id: '/admin/templates'
+      path: '/templates'
+      fullPath: '/admin/templates'
+      preLoaderRoute: typeof AdminTemplatesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -197,12 +216,14 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminTemplatesRoute: typeof AdminTemplatesRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminWorkspacesIdRoute: typeof AdminWorkspacesIdRoute
   AdminWorkspacesIndexRoute: typeof AdminWorkspacesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminTemplatesRoute: AdminTemplatesRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminWorkspacesIdRoute: AdminWorkspacesIdRoute,
   AdminWorkspacesIndexRoute: AdminWorkspacesIndexRoute,
@@ -219,3 +240,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
