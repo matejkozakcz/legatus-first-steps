@@ -175,6 +175,42 @@ export type Database = {
           },
         ]
       }
+      goals: {
+        Row: {
+          created_at: string
+          id: string
+          metric_key: string
+          period_start: string
+          period_type: string
+          target_value: number
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_key: string
+          period_start: string
+          period_type: string
+          target_value?: number
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_key?: string
+          period_start?: string
+          period_type?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       impersonation_log: {
         Row: {
           ended_at: string | null
