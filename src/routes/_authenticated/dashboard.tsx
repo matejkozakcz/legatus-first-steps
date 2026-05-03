@@ -14,6 +14,7 @@ import { Plus, LogOut } from "lucide-react";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { PeriodSwitcher, getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -26,7 +27,13 @@ function Dashboard() {
   const { currentRole } = useRoles();
   const { meetingTypes } = useMeetingTypes();
   const { hasConsent } = useGdprConsent();
+  const { effectiveUserId, isImpersonating, start: startImpersonate, state: impState } = useImpersonation();
+  
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  // The user we're viewing data for (self or impersonated)
+  const viewedUserId = effectiveUserId ?? user?.id ?? null;
+  const viewedUserName = isImpersonating ? impState?.targetName : user?.full_name;
 
   const [mode, setMode] = useState<PeriodMode>("month");
   const [anchor, setAnchor] = useState<Date>(new Date());
@@ -42,22 +49,22 @@ function Dashboard() {
     if (!workspace && isAdmin) navigate({ to: "/admin", replace: true });
   }, [workspace, isAdmin, navigate]);
 
-  // Goals for current user + period
+  // Goals for viewed user (self or impersonated) + period
   const { data: goals = [] } = useQuery({
-    queryKey: ["goals", workspace?.id, user?.id, mode, period.startStr],
+    queryKey: ["goals", workspace?.id, viewedUserId, mode, period.startStr],
     queryFn: async () => {
-      if (!workspace?.id || !user?.id) return [];
+      if (!workspace?.id || !viewedUserId) return [];
       const { data, error } = await supabase
         .from("goals")
         .select("metric_key, target_value")
         .eq("workspace_id", workspace.id)
-        .eq("user_id", user.id)
+        .eq("user_id", viewedUserId)
         .eq("period_type", mode)
         .eq("period_start", period.startStr);
       if (error) throw error;
       return data || [];
     },
-    enabled: !!workspace?.id && !!user?.id,
+    enabled: !!workspace?.id && !!viewedUserId,
   });
 
   // Meetings in period (own + subtree per RLS)
@@ -85,17 +92,17 @@ function Dashboard() {
 
   const personalBj = useMemo(() => {
     return periodMeetings
-      .filter((m: any) => m.user_id === user?.id)
+      .filter((m: any) => m.user_id === viewedUserId)
       .reduce((s: number, m: any) => s + Number(m.result?.bj ?? m.result?.podepsane_bj ?? 0), 0);
-  }, [periodMeetings, user?.id]);
+  }, [periodMeetings, viewedUserId]);
 
   const teamBj = useMemo(() => {
     return periodMeetings.reduce((s: number, m: any) => s + Number(m.result?.bj ?? m.result?.podepsane_bj ?? 0), 0);
   }, [periodMeetings]);
 
   const personalMeetingCount = useMemo(
-    () => periodMeetings.filter((m: any) => m.user_id === user?.id && m.status !== "cancelled").length,
-    [periodMeetings, user?.id]
+    () => periodMeetings.filter((m: any) => m.user_id === viewedUserId && m.status !== "cancelled").length,
+    [periodMeetings, viewedUserId]
   );
 
   // Activity per meeting type: scheduled vs completed in period
@@ -140,16 +147,17 @@ function Dashboard() {
           <div>
             <h1 className="text-xl font-semibold">{workspace.name}</h1>
             <p className="text-xs text-muted-foreground">
-              {user?.full_name} · {currentRole?.label ?? "—"}
+              {viewedUserName ?? user?.full_name} · {currentRole?.label ?? "—"}
+              {isImpersonating && <span className="ml-2 text-amber-600 font-medium">(náhled)</span>}
             </p>
           </div>
           <PeriodSwitcher mode={mode} setMode={setMode} anchor={anchor} setAnchor={setAnchor} label={period.label} />
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              disabled={!hasConsent}
+              disabled={!hasConsent || isImpersonating}
               onClick={() => navigate({ to: "/schuzky/nova" })}
-              title={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
+              title={isImpersonating ? "Pouze náhled" : !hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
             >
               <Plus className="mr-1 h-4 w-4" /> Schůzka
             </Button>
@@ -200,7 +208,11 @@ function Dashboard() {
             </CardHeader>
             <CardContent className="p-0">
               <div style={{ height: 520 }}>
-                <OrgChart periodStart={period.startStr} periodEnd={period.endStr} />
+                <OrgChart
+                  periodStart={period.startStr}
+                  periodEnd={period.endStr}
+                  onImpersonate={(id, name) => void startImpersonate(id, name)}
+                />
               </div>
             </CardContent>
           </Card>
