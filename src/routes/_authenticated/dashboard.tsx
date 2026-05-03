@@ -29,6 +29,7 @@ function Dashboard() {
   const { meetingTypes } = useMeetingTypes();
   const { hasConsent } = useGdprConsent();
   const { effectiveUserId, isImpersonating, start: startImpersonate, state: impState } = useImpersonation();
+  const { open: openNewMeeting } = useNewMeetingModal();
 
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [mode, setMode] = useState<PeriodMode>("month");
@@ -224,7 +225,7 @@ function Dashboard() {
           <div className="flex items-center gap-2">
             <Button
               disabled={!hasConsent || isImpersonating}
-              onClick={() => navigate({ to: "/schuzky/nova" })}
+              onClick={() => openNewMeeting()}
               title={isImpersonating ? "Pouze náhled" : !hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
               className="bg-[#fc7c71] hover:bg-[#e05a50] text-white"
             >
