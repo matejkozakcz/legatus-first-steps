@@ -135,6 +135,18 @@ function MeetingDetailPage() {
         .order("scheduled_at", { ascending: true });
       if (cancelled) return;
       setChildren((kids ?? []) as unknown as ChildMeeting[]);
+
+      const { data: srcCall } = await supabase
+        .from("calls")
+        .select("session_id, call_party_sessions:session_id(event_id)")
+        .eq("meeting_id", id)
+        .maybeSingle();
+      if (!cancelled && srcCall?.session_id) {
+        const eventId =
+          (srcCall as { call_party_sessions?: { event_id: string | null } | null })
+            .call_party_sessions?.event_id ?? null;
+        setSource({ session_id: srcCall.session_id, event_id: eventId });
+      }
       setLoading(false);
     })();
     return () => {
