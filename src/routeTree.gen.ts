@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminWorkspacesRouteImport } from './routes/admin.workspaces'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
 const AuthRoute = AuthRouteImport.update({
@@ -40,6 +41,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminWorkspacesRoute = AdminWorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -51,12 +57,14 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -66,13 +74,20 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/dashboard' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/dashboard'
+    | '/admin/workspaces'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/admin'
+  to: '/' | '/auth' | '/dashboard' | '/admin/workspaces' | '/admin'
   id:
     | '__root__'
     | '/'
@@ -80,6 +95,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/admin/workspaces'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -127,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/workspaces': {
+      id: '/admin/workspaces'
+      path: '/workspaces'
+      fullPath: '/admin/workspaces'
+      preLoaderRoute: typeof AdminWorkspacesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -150,10 +173,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminWorkspacesRoute: typeof AdminWorkspacesRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminWorkspacesRoute: AdminWorkspacesRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
