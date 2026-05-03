@@ -14,7 +14,7 @@ import { Plus, LogOut } from "lucide-react";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { PeriodSwitcher, getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
-import { useImpersonation, useReadOnlyGuard } from "@/contexts/ImpersonationContext";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -28,7 +28,7 @@ function Dashboard() {
   const { meetingTypes } = useMeetingTypes();
   const { hasConsent } = useGdprConsent();
   const { effectiveUserId, isImpersonating, start: startImpersonate, state: impState } = useImpersonation();
-  const { disabledProps } = useReadOnlyGuard();
+  
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   // The user we're viewing data for (self or impersonated)
