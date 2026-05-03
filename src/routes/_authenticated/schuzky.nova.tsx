@@ -79,9 +79,14 @@ function NewMeetingPage() {
   const [searching, setSearching] = useState(false);
   const [creatingPerson, setCreatingPerson] = useState(false);
 
-  // Follow-up modal (step 5 placeholder)
+  // Follow-up modal
   const [followUpOpen, setFollowUpOpen] = useState(false);
-  const [createdMeetingId, setCreatedMeetingId] = useState<string | null>(null);
+  const [createdMeeting, setCreatedMeeting] = useState<{
+    id: string;
+    type_key: string;
+    scheduled_at: string;
+    person_id: string | null;
+  } | null>(null);
 
   const selectedType = typeKey ? getMeetingType(typeKey) : undefined;
 
