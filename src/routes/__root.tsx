@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
 import { ImpersonationBanner } from "@/components/ImpersonationBanner";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 function NotFoundComponent() {
   return (
@@ -79,15 +80,17 @@ function RootComponent() {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <WorkspaceProvider>
-          <ImpersonationProvider>
-            <ImpersonationBanner />
-            <Outlet />
-            <Toaster richColors position="top-right" />
-          </ImpersonationProvider>
-        </WorkspaceProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <WorkspaceProvider>
+            <ImpersonationProvider>
+              <ImpersonationBanner />
+              <Outlet />
+              <Toaster richColors position="top-right" />
+            </ImpersonationProvider>
+          </WorkspaceProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
