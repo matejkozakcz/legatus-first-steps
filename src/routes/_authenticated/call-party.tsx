@@ -19,8 +19,15 @@ import {
   ActiveSession,
   SessionSummary,
   type CallRow,
+  type FillMode,
   type SessionRow,
 } from "@/components/call-party/ActiveSession";
+
+function useFillMode(): FillMode {
+  const { config } = useWorkspace();
+  const ui = (config?.uiConfig ?? {}) as { meeting_fill_mode?: FillMode };
+  return ui.meeting_fill_mode === "deferred" ? "deferred" : "immediate";
+}
 
 export const Route = createFileRoute("/_authenticated/call-party")({
   component: CallPartyPage,
