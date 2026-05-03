@@ -251,7 +251,7 @@ function NewWorkspaceDialog({ onCreated }: { onCreated: () => void }) {
 
       const { data: ws, error: wsErr } = await supabase
         .from("workspaces")
-        .insert({ name: name.trim(), slug, status: "pending", plan, invite_token })
+        .insert({ name: name.trim(), slug, status: "active", plan, invite_token })
         .select()
         .single();
       if (wsErr) throw wsErr;
