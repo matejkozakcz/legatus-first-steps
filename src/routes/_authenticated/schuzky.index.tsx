@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { useRoles } from "@/hooks/useRoles";
+import { useNewMeetingModal } from "@/components/NewMeetingModal";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -69,6 +70,7 @@ function MeetingsListPage() {
   const { workspace, user } = useWorkspace();
   const { getMeetingType } = useMeetingTypes();
   const { currentLevel } = useRoles();
+  const { open: openNewMeeting } = useNewMeetingModal();
 
   const isLeader = currentLevel != null && currentLevel <= 2;
 
@@ -154,10 +156,8 @@ function MeetingsListPage() {
               {workspace?.name ?? "—"}
             </p>
           </div>
-          <Button asChild size="sm" className="hidden sm:inline-flex">
-            <Link to="/schuzky/nova">
-              <Plus className="mr-1 h-4 w-4" /> Nová schůzka
-            </Link>
+          <Button size="sm" className="hidden sm:inline-flex" onClick={() => openNewMeeting()}>
+            <Plus className="mr-1 h-4 w-4" /> Nová schůzka
           </Button>
         </div>
       </header>
@@ -260,13 +260,11 @@ function MeetingsListPage() {
       </main>
 
       <Button
-        asChild
         size="icon"
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg sm:hidden"
+        onClick={() => openNewMeeting()}
       >
-        <Link to="/schuzky/nova">
-          <Plus className="h-6 w-6" />
-        </Link>
+        <Plus className="h-6 w-6" />
       </Button>
     </div>
   );
