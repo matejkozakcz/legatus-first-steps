@@ -76,11 +76,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <AuthProvider>
-      <WorkspaceProvider>
-        <Outlet />
-      </WorkspaceProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <ImpersonationProvider>
+            <ImpersonationBanner />
+            <Outlet />
+            <Toaster richColors position="top-right" />
+          </ImpersonationProvider>
+        </WorkspaceProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
