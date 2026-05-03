@@ -208,11 +208,37 @@ function TemplateDialog({
         </div>
         <TemplateEditor value={data} onChange={setData} />
       </div>
-      <DialogFooter>
+      <DialogFooter className="sm:justify-between">
+        {mode === "edit" && template ? (
+          <Button
+            variant="destructive"
+            disabled={busy}
+            onClick={async () => {
+              if (!confirm(`Opravdu smazat šablonu "${template.name}"?`)) return;
+              setBusy(true);
+              try {
+                const { error } = await supabase
+                  .from("workspace_templates")
+                  .delete()
+                  .eq("id", template.id);
+                if (error) throw error;
+                toast.success("Šablona smazána");
+                onDone();
+              } catch (e) {
+                toast.error((e as Error).message);
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            Smazat
+          </Button>
+        ) : <span />}
         <Button onClick={submit} disabled={busy}>
           {busy ? "Ukládám…" : mode === "create" ? "Vytvořit šablonu" : "Uložit"}
         </Button>
       </DialogFooter>
+
     </DialogContent>
   );
 }
