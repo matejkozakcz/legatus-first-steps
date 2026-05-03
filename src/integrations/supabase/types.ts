@@ -14,6 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
+      call_party_events: {
+        Row: {
+          created_at: string | null
+          id: string
+          organizer_id: string
+          scheduled_at: string
+          status: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organizer_id: string
+          scheduled_at: string
+          status?: string
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organizer_id?: string
+          scheduled_at?: string
+          status?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_party_events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "call_party_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      call_party_sessions: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          finished_at: string | null
+          id: string
+          started_at: string
+          status: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_party_sessions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "call_party_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "call_party_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "call_party_sessions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calls: {
+        Row: {
+          called_at: string
+          contact_name: string
+          contact_name_normalized: string
+          id: string
+          meeting_id: string | null
+          note: string | null
+          result: string
+          session_id: string
+          workspace_id: string
+        }
+        Insert: {
+          called_at?: string
+          contact_name: string
+          contact_name_normalized: string
+          id?: string
+          meeting_id?: string | null
+          note?: string | null
+          result: string
+          session_id: string
+          workspace_id: string
+        }
+        Update: {
+          called_at?: string
+          contact_name?: string
+          contact_name_normalized?: string
+          id?: string
+          meeting_id?: string | null
+          note?: string | null
+          result?: string
+          session_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calls_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calls_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "call_party_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calls_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       impersonation_log: {
         Row: {
           ended_at: string | null
