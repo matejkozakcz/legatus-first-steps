@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
@@ -33,7 +33,7 @@ import legatusLogo from "@/assets/legatus-logo-white.png";
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const navigate = useNavigate();
+  
   const { open: openSettings } = useSettingsModal();
   const { user: authUser, signOut } = useAuth();
   const { user: profile } = useWorkspace();
