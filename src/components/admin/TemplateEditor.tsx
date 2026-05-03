@@ -419,61 +419,188 @@ function FollowUpSection({
     });
   };
 
+  const [previewKey, setPreviewKey] = useState<string | null>(meetingTypes[0]?.key ?? null);
+
   return (
     <Section title="Follow-up pravidla">
+      <div className="rounded-md border border-primary/20 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">
+        <p className="mb-1 font-medium text-foreground">Co to je?</p>
+        <p>
+          Po dokončení schůzky systém uživateli nabídne <strong>další navazující schůzku</strong>.
+          Tady určíš, které typy schůzek se nabídnou — zvlášť pro klientskou a náborovou větev.
+        </p>
+        <ul className="mt-2 space-y-1">
+          <li>
+            <strong className="text-foreground">Klientská stopa</strong> = práce s klientem
+            (prodej, servis). Po schůzce se nabídnou tyto typy, pokud agent označí kontakt jako
+            klienta.
+          </li>
+          <li>
+            <strong className="text-foreground">Náborová stopa</strong> = práce s potenciálním
+            členem týmu. Nabídne se, když agent označí kontakt jako rekruta.
+          </li>
+        </ul>
+        <p className="mt-2">
+          Když necháš obě stopy prázdné, žádný follow-up se po této schůzce nenabídne.
+        </p>
+      </div>
+
       {meetingTypes.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nejprve přidej typy schůzek.</p>
       ) : (
-        <div className="space-y-3">
-          {meetingTypes.map((m) => {
-            const current = rules[m.key] ?? { client_track: [], recruitment_track: [] };
-            return (
-              <Card key={m.key}>
-                <CardContent className="space-y-3 p-4">
-                  <div className="font-medium">{m.label}</div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-                        Klientská stopa
-                      </p>
-                      <div className="space-y-1">
-                        {meetingTypes.map((t) => (
-                          <label key={t.key} className="flex items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={(current.client_track ?? []).includes(t.key)}
-                              onCheckedChange={() => toggle(m.key, "client_track", t.key)}
-                            />
-                            {t.label}
-                          </label>
-                        ))}
+        <>
+          <div className="space-y-3">
+            {meetingTypes.map((m) => {
+              const current = rules[m.key] ?? { client_track: [], recruitment_track: [] };
+              return (
+                <Card key={m.key}>
+                  <CardContent className="space-y-3 p-4">
+                    <div className="font-medium">{m.label}</div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">
+                          Klientská stopa
+                        </p>
+                        <p className="mb-2 text-xs text-muted-foreground/80">
+                          Co nabídnout po schůzce s klientem
+                        </p>
+                        <div className="space-y-1">
+                          {meetingTypes.map((t) => (
+                            <label key={t.key} className="flex items-center gap-2 text-sm">
+                              <Checkbox
+                                checked={(current.client_track ?? []).includes(t.key)}
+                                onCheckedChange={() => toggle(m.key, "client_track", t.key)}
+                              />
+                              {t.label}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">
+                          Náborová stopa
+                        </p>
+                        <p className="mb-2 text-xs text-muted-foreground/80">
+                          Co nabídnout po schůzce s rekrutem
+                        </p>
+                        <div className="space-y-1">
+                          {meetingTypes.map((t) => (
+                            <label key={t.key} className="flex items-center gap-2 text-sm">
+                              <Checkbox
+                                checked={(current.recruitment_track ?? []).includes(t.key)}
+                                onCheckedChange={() => toggle(m.key, "recruitment_track", t.key)}
+                              />
+                              {t.label}
+                            </label>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-                        Náborová stopa
-                      </p>
-                      <div className="space-y-1">
-                        {meetingTypes.map((t) => (
-                          <label key={t.key} className="flex items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={(current.recruitment_track ?? []).includes(t.key)}
-                              onCheckedChange={() => toggle(m.key, "recruitment_track", t.key)}
-                            />
-                            {t.label}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          <FlowPreview
+            meetingTypes={meetingTypes}
+            rules={rules}
+            selectedKey={previewKey}
+            onSelect={setPreviewKey}
+          />
+        </>
       )}
     </Section>
   );
 }
+
+function FlowPreview({
+  meetingTypes,
+  rules,
+  selectedKey,
+  onSelect,
+}: {
+  meetingTypes: TemplateMeetingType[];
+  rules: FollowUpRules;
+  selectedKey: string | null;
+  onSelect: (k: string) => void;
+}) {
+  const selected = meetingTypes.find((m) => m.key === selectedKey) ?? meetingTypes[0];
+  if (!selected) return null;
+  const current = rules[selected.key] ?? { client_track: [], recruitment_track: [] };
+  const labelOf = (k: string) => meetingTypes.find((m) => m.key === k)?.label ?? k;
+
+  const Track = ({ title, items }: { title: string; items: string[] }) => (
+    <div className="flex-1">
+      <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{title}</p>
+      {items.length === 0 ? (
+        <div className="rounded-md border border-dashed p-3 text-xs text-muted-foreground">
+          Žádný follow-up — proces tady končí.
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          {items.map((k) => (
+            <span
+              key={k}
+              className="inline-flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-xs"
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: meetingTypes.find((m) => m.key === k)?.color ?? "#888" }}
+              />
+              {labelOf(k)}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <Card className="border-dashed bg-muted/20">
+      <CardContent className="space-y-4 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              Náhled — jak to funguje
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Co se uživateli nabídne po dokončení vybrané schůzky.
+            </p>
+          </div>
+          <Select value={selected.key} onValueChange={onSelect}>
+            <SelectTrigger className="w-56">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {meetingTypes.map((m) => (
+                <SelectItem key={m.key} value={m.key}>
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-md border bg-background p-3">
+          <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium">
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ background: selected.color }}
+            />
+            {selected.label}
+          </span>
+          <span className="text-muted-foreground">→</span>
+          <div className="flex flex-1 gap-6">
+            <Track title="Klient" items={current.client_track ?? []} />
+            <Track title="Rekrut" items={current.recruitment_track ?? []} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 function ProductionUnitSection({
   unit,
