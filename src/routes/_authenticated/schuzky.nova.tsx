@@ -42,14 +42,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { FollowUpMeetingModal } from "@/components/FollowUpMeetingModal";
 
 export const Route = createFileRoute("/_authenticated/schuzky/nova")({
   component: NewMeetingPage,
@@ -86,9 +79,14 @@ function NewMeetingPage() {
   const [searching, setSearching] = useState(false);
   const [creatingPerson, setCreatingPerson] = useState(false);
 
-  // Follow-up modal (step 5 placeholder)
+  // Follow-up modal
   const [followUpOpen, setFollowUpOpen] = useState(false);
-  const [createdMeetingId, setCreatedMeetingId] = useState<string | null>(null);
+  const [createdMeeting, setCreatedMeeting] = useState<{
+    id: string;
+    type_key: string;
+    scheduled_at: string;
+    person_id: string | null;
+  } | null>(null);
 
   const selectedType = typeKey ? getMeetingType(typeKey) : undefined;
 
@@ -194,10 +192,16 @@ function NewMeetingPage() {
     }
 
     toast.success(cancelled ? "Schůzka uložena jako zrušená" : "Schůzka vytvořena");
-    setCreatedMeetingId((data as { id: string }).id);
+    const created = data as { id: string };
     if (cancelled) {
       navigate({ to: "/dashboard" });
     } else {
+      setCreatedMeeting({
+        id: created.id,
+        type_key: typeKey,
+        scheduled_at: payload.scheduled_at,
+        person_id: payload.person_id,
+      });
       setFollowUpOpen(true);
     }
   }
@@ -520,30 +524,18 @@ function NewMeetingPage() {
         </div>
       </main>
 
-      <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Naplánovat follow-up?</DialogTitle>
-            <DialogDescription>
-              Schůzka byla uložena. Follow-up flow doplníme v dalším kroku.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="text-xs text-muted-foreground">
-            Meeting ID: {createdMeetingId}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: "/dashboard" })}
-            >
-              Přeskočit
-            </Button>
-            <Button onClick={() => navigate({ to: "/dashboard" })}>
-              Hotovo
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <FollowUpMeetingModal
+        open={followUpOpen}
+        onOpenChange={(o) => {
+          setFollowUpOpen(o);
+          if (!o) navigate({ to: "/dashboard" });
+        }}
+        parent={createdMeeting}
+        onDone={() => {
+          setFollowUpOpen(false);
+          navigate({ to: "/dashboard" });
+        }}
+      />
     </div>
   );
 }
