@@ -161,6 +161,7 @@ function MeetingsListPage() {
           <Button size="sm" className="hidden sm:inline-flex" onClick={() => openNewMeeting()}>
             <Plus className="mr-1 h-4 w-4" /> Nová schůzka
           </Button>
+          <NotificationBell />
         </div>
       </header>
 
