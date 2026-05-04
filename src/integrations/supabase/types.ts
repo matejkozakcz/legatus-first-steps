@@ -175,6 +175,128 @@ export type Database = {
           },
         ]
       }
+      competition_participants: {
+        Row: {
+          competition_id: string
+          current_value: number | null
+          id: string
+          rank: number | null
+          updated_at: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          competition_id: string
+          current_value?: number | null
+          id?: string
+          rank?: number | null
+          updated_at?: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          competition_id?: string
+          current_value?: number | null
+          id?: string
+          rank?: number | null
+          updated_at?: string | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_participants_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_participants_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitions: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          event_id: string | null
+          id: string
+          metric_key: string
+          period_end: string
+          period_start: string
+          period_type: string
+          scope: string
+          status: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          event_id?: string | null
+          id?: string
+          metric_key: string
+          period_end: string
+          period_start: string
+          period_type: string
+          scope?: string
+          status?: string
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          event_id?: string | null
+          id?: string
+          metric_key?: string
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          scope?: string
+          status?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competitions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "call_party_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competitions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string
