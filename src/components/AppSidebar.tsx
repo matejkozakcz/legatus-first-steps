@@ -28,6 +28,7 @@ import { useWorkspace } from "@/hooks/useWorkspace";
 import { useRoles } from "@/hooks/useRoles";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettingsModal } from "@/components/SettingsModal";
+import { NotificationBell } from "@/components/NotificationBell";
 import legatusLogo from "@/assets/legatus-logo-white.png";
 
 export function AppSidebar() {
