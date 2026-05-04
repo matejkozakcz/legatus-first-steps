@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/components/NotificationBell";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
