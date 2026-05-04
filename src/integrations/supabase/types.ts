@@ -511,6 +511,45 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          accent_color: string | null
+          body: string
+          created_at: string
+          icon: string | null
+          id: string
+          link_url: string | null
+          read_at: string | null
+          recipient_id: string
+          title: string
+          workspace_id: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          body: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          link_url?: string | null
+          read_at?: string | null
+          recipient_id: string
+          title: string
+          workspace_id?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          body?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          link_url?: string | null
+          read_at?: string | null
+          recipient_id?: string
+          title?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       people: {
         Row: {
           created_at: string

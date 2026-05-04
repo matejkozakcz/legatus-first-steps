@@ -28,6 +28,7 @@ import { useWorkspace } from "@/hooks/useWorkspace";
 import { useRoles } from "@/hooks/useRoles";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettingsModal } from "@/components/SettingsModal";
+import { NotificationBell } from "@/components/NotificationBell";
 import legatusLogo from "@/assets/legatus-logo-white.png";
 
 export function AppSidebar() {
@@ -156,6 +157,19 @@ export function AppSidebar() {
 
         {/* Bottom actions */}
         <div className="mt-auto pt-2 space-y-1">
+          {collapsed && (
+            <div className="flex justify-center pb-1">
+              <NotificationBell compact />
+            </div>
+          )}
+          {!collapsed && (
+            <div className="flex items-center justify-between px-2 pb-1">
+              <span className="text-[11px] uppercase tracking-wider text-[#0a3540]/40 dark:text-white/40">
+                Notifikace
+              </span>
+              <NotificationBell compact />
+            </div>
+          )}
           <button
             onClick={toggleTheme}
             className="nav-item w-full"

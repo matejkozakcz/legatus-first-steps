@@ -9,7 +9,8 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GdprConsentModal, useGdprConsent } from "@/components/GdprConsentModal";
-import { Plus, FileDown, Bell } from "lucide-react";
+import { Plus, FileDown } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
@@ -214,9 +215,7 @@ function Dashboard() {
             <Button variant="outline" size="sm" disabled title="Brzy">
               <FileDown className="mr-1 h-4 w-4" /> Export PDF
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Notifikace">
-              <Bell className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
           </div>
         </div>
         <div className="px-6 pb-3 text-xs text-muted-foreground">
