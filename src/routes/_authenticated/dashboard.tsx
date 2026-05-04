@@ -214,9 +214,7 @@ function Dashboard() {
             <Button variant="outline" size="sm" disabled title="Brzy">
               <FileDown className="mr-1 h-4 w-4" /> Export PDF
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Notifikace">
-              <Bell className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
           </div>
         </div>
         <div className="px-6 pb-3 text-xs text-muted-foreground">
