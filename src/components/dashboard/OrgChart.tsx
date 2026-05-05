@@ -149,6 +149,7 @@ interface RenderProps {
   toggle: (id: string) => void;
   depth: number;
   bjMap: Map<string, number>;
+  unitLabel: string;
   roleLabel: (key: string | null) => string;
   roleColor: (key: string | null) => string;
   canImpersonateFn: (n: UserNode) => boolean;
