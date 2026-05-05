@@ -190,46 +190,16 @@ function Dashboard() {
     <div className="min-h-screen bg-background">
       <GdprConsentModal />
 
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="px-6 py-4 flex items-center gap-4 flex-wrap">
-          <h1
-            className="font-heading font-bold tracking-[0.2em] text-[color:var(--deep-hex)]"
-            style={{ fontSize: 22 }}
-          >
-            DASHBOARD
-          </h1>
-
-          <div className="flex-1 flex items-center justify-center">
-            <PeriodNavigator
-              mode={mode}
-              setMode={setMode}
-              label={period.label}
-              onPrev={() => shift(-1)}
-              onNext={() => shift(1)}
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              disabled={!hasConsent || isImpersonating}
-              onClick={() => openNewMeeting()}
-              title={isImpersonating ? "Pouze náhled" : !hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
-              className="bg-[#fc7c71] hover:bg-[#e05a50] text-white"
-            >
-              <Plus className="mr-1 h-4 w-4" /> Schůzka
-            </Button>
-            <Button variant="outline" size="sm" disabled title="Brzy">
-              <FileDown className="mr-1 h-4 w-4" /> Export PDF
-            </Button>
-            <NotificationBell />
-          </div>
-        </div>
-        <div className="px-6 pb-3 text-xs text-muted-foreground">
-          {viewedUserName ?? user?.full_name} · {currentRole?.label ?? "—"}
-          {isImpersonating && <span className="ml-2 text-amber-600 font-medium">(náhled)</span>}
-        </div>
-      </header>
+      <DashboardHeader
+        mode={mode}
+        setMode={setMode}
+        label={period.label}
+        onPrev={() => shift(-1)}
+        onNext={() => shift(1)}
+        onNewMeeting={() => openNewMeeting()}
+        canCreateMeeting={hasConsent}
+        newMeetingDisabledReason={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
+      />
 
       <main className="px-6 py-6 space-y-6">
         {/* Goals + Org Chart */}
