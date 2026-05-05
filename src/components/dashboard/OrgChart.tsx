@@ -27,6 +27,7 @@ const LINE = "hsl(var(--border))";
 function NodeCard({
   node,
   bj,
+  unitLabel,
   roleLabel,
   roleColor,
   canImpersonate,
@@ -34,6 +35,7 @@ function NodeCard({
 }: {
   node: UserNode;
   bj: number;
+  unitLabel: string;
   roleLabel: string;
   roleColor: string;
   canImpersonate: boolean;
