@@ -161,9 +161,9 @@ export function NotificationBell({ compact = false }: Props) {
       <PopoverTrigger asChild>
         <button aria-label="Notifikace" style={buttonStyle}>
           {unreadCount > 0 ? (
-            <BellRing size={17} color={isDark ? "#4dd8e8" : "#00555f"} className="animate-pulse" />
+            <BellRing size={17} color="var(--deep-hex)" className="animate-pulse" />
           ) : (
-            <Bell size={17} color={isDark ? "#4dd8e8" : "#00555f"} />
+            <Bell size={17} color="var(--deep-hex)" />
           )}
           {unreadCount > 0 && (
             <span
