@@ -1,40 +1,28 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format, addWeeks, addMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
-import { cs } from "date-fns/locale";
+import { addWeeks, addMonths } from "date-fns";
+import {
+  getProductionPeriod,
+  getWeekPeriod,
+  type PeriodRange,
+  type ProductionPeriodConfig,
+} from "@/lib/productionPeriod";
 
 export type PeriodMode = "week" | "month";
+export type { PeriodRange } from "@/lib/productionPeriod";
 
-export interface PeriodRange {
-  start: Date;
-  end: Date;
-  startStr: string;
-  endStr: string;
-  label: string;
-}
-
-export function getPeriodRange(mode: PeriodMode, anchor: Date): PeriodRange {
-  if (mode === "week") {
-    const start = startOfWeek(anchor, { weekStartsOn: 1 });
-    const end = endOfWeek(anchor, { weekStartsOn: 1 });
-    return {
-      start,
-      end,
-      startStr: format(start, "yyyy-MM-dd"),
-      endStr: format(end, "yyyy-MM-dd") + "T23:59:59",
-      label: `${format(start, "d. M.", { locale: cs })} – ${format(end, "d. M. yyyy", { locale: cs })}`,
-    };
-  }
-  const start = startOfMonth(anchor);
-  const end = endOfMonth(anchor);
-  return {
-    start,
-    end,
-    startStr: format(start, "yyyy-MM-dd"),
-    endStr: format(end, "yyyy-MM-dd") + "T23:59:59",
-    label: format(anchor, "LLLL yyyy", { locale: cs }).replace(/^\w/, (c) => c.toUpperCase()),
-  };
+/**
+ * Compute the active period range. The "month" mode uses the workspace
+ * production period config (workspace_config.ui_config.production_period).
+ */
+export function getPeriodRange(
+  mode: PeriodMode,
+  anchor: Date,
+  productionConfig?: ProductionPeriodConfig | null,
+): PeriodRange {
+  if (mode === "week") return getWeekPeriod(anchor);
+  return getProductionPeriod(anchor, productionConfig);
 }
 
 interface PeriodSwitcherProps {

@@ -9,15 +9,14 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GdprConsentModal, useGdprConsent } from "@/components/GdprConsentModal";
-import { Plus, FileDown } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
-import { PeriodNavigator } from "@/components/dashboard/PeriodNavigator";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
+import type { ProductionPeriodConfig } from "@/lib/productionPeriod";
 import { addWeeks, addMonths } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -27,20 +26,27 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
-  const { workspace, user, productionUnit } = useWorkspace();
+  const { workspace, user, productionUnit, config } = useWorkspace();
   const { currentRole } = useRoles();
   const { meetingTypes } = useMeetingTypes();
   const { hasConsent } = useGdprConsent();
-  const { effectiveUserId, isImpersonating, start: startImpersonate, state: impState } = useImpersonation();
+  const { effectiveUserId, isImpersonating, start: startImpersonate } = useImpersonation();
   const { open: openNewMeeting } = useNewMeetingModal();
 
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [mode, setMode] = useState<PeriodMode>("month");
   const [anchor, setAnchor] = useState<Date>(new Date());
-  const period = useMemo(() => getPeriodRange(mode, anchor), [mode, anchor]);
+
+  const productionPeriodCfg = (config?.uiConfig?.production_period ?? null) as
+    | ProductionPeriodConfig
+    | null;
+
+  const period = useMemo(
+    () => getPeriodRange(mode, anchor, productionPeriodCfg),
+    [mode, anchor, productionPeriodCfg],
+  );
 
   const viewedUserId = effectiveUserId ?? user?.id ?? null;
-  const viewedUserName = isImpersonating ? impState?.targetName : user?.full_name;
 
   useEffect(() => {
     if (!authUser?.id) return;
@@ -51,6 +57,7 @@ function Dashboard() {
   useEffect(() => {
     if (!workspace && isAdmin) navigate({ to: "/admin", replace: true });
   }, [workspace, isAdmin, navigate]);
+
 
   const { data: goals = [] } = useQuery({
     queryKey: ["goals", workspace?.id, viewedUserId, mode, period.startStr],
@@ -183,46 +190,16 @@ function Dashboard() {
     <div className="min-h-screen bg-background">
       <GdprConsentModal />
 
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="px-6 py-4 flex items-center gap-4 flex-wrap">
-          <h1
-            className="font-heading font-bold tracking-[0.2em] text-[color:var(--deep-hex)]"
-            style={{ fontSize: 22 }}
-          >
-            DASHBOARD
-          </h1>
-
-          <div className="flex-1 flex items-center justify-center">
-            <PeriodNavigator
-              mode={mode}
-              setMode={setMode}
-              label={period.label}
-              onPrev={() => shift(-1)}
-              onNext={() => shift(1)}
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              disabled={!hasConsent || isImpersonating}
-              onClick={() => openNewMeeting()}
-              title={isImpersonating ? "Pouze náhled" : !hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
-              className="bg-[#fc7c71] hover:bg-[#e05a50] text-white"
-            >
-              <Plus className="mr-1 h-4 w-4" /> Schůzka
-            </Button>
-            <Button variant="outline" size="sm" disabled title="Brzy">
-              <FileDown className="mr-1 h-4 w-4" /> Export PDF
-            </Button>
-            <NotificationBell />
-          </div>
-        </div>
-        <div className="px-6 pb-3 text-xs text-muted-foreground">
-          {viewedUserName ?? user?.full_name} · {currentRole?.label ?? "—"}
-          {isImpersonating && <span className="ml-2 text-amber-600 font-medium">(náhled)</span>}
-        </div>
-      </header>
+      <DashboardHeader
+        mode={mode}
+        setMode={setMode}
+        label={period.label}
+        onPrev={() => shift(-1)}
+        onNext={() => shift(1)}
+        onNewMeeting={() => openNewMeeting()}
+        canCreateMeeting={hasConsent}
+        newMeetingDisabledReason={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
+      />
 
       <main className="px-6 py-6 space-y-6">
         {/* Goals + Org Chart */}
