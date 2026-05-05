@@ -242,6 +242,7 @@ function TreeNode(props: RenderProps) {
                 toggle={toggle}
                 depth={depth + 1}
                 bjMap={bjMap}
+                unitLabel={unitLabel}
                 roleLabel={roleLabel}
                 roleColor={roleColor}
                 canImpersonateFn={canImpersonateFn}
