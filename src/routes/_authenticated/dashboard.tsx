@@ -9,15 +9,14 @@ import { useMeetingTypes } from "@/hooks/useMeetingTypes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GdprConsentModal, useGdprConsent } from "@/components/GdprConsentModal";
-import { Plus, FileDown } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
 import { GaugeIndicator } from "@/components/dashboard/GaugeIndicator";
 import { OrgChart } from "@/components/dashboard/OrgChart";
 import { getPeriodRange, type PeriodMode } from "@/components/dashboard/PeriodSwitcher";
-import { PeriodNavigator } from "@/components/dashboard/PeriodNavigator";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { useNewMeetingModal } from "@/components/NewMeetingModal";
+import type { ProductionPeriodConfig } from "@/lib/productionPeriod";
 import { addWeeks, addMonths } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -27,20 +26,27 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
-  const { workspace, user, productionUnit } = useWorkspace();
+  const { workspace, user, productionUnit, config } = useWorkspace();
   const { currentRole } = useRoles();
   const { meetingTypes } = useMeetingTypes();
   const { hasConsent } = useGdprConsent();
-  const { effectiveUserId, isImpersonating, start: startImpersonate, state: impState } = useImpersonation();
+  const { effectiveUserId, isImpersonating, start: startImpersonate } = useImpersonation();
   const { open: openNewMeeting } = useNewMeetingModal();
 
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [mode, setMode] = useState<PeriodMode>("month");
   const [anchor, setAnchor] = useState<Date>(new Date());
-  const period = useMemo(() => getPeriodRange(mode, anchor), [mode, anchor]);
+
+  const productionPeriodCfg = (config?.uiConfig?.production_period ?? null) as
+    | ProductionPeriodConfig
+    | null;
+
+  const period = useMemo(
+    () => getPeriodRange(mode, anchor, productionPeriodCfg),
+    [mode, anchor, productionPeriodCfg],
+  );
 
   const viewedUserId = effectiveUserId ?? user?.id ?? null;
-  const viewedUserName = isImpersonating ? impState?.targetName : user?.full_name;
 
   useEffect(() => {
     if (!authUser?.id) return;
@@ -51,6 +57,7 @@ function Dashboard() {
   useEffect(() => {
     if (!workspace && isAdmin) navigate({ to: "/admin", replace: true });
   }, [workspace, isAdmin, navigate]);
+
 
   const { data: goals = [] } = useQuery({
     queryKey: ["goals", workspace?.id, viewedUserId, mode, period.startStr],
