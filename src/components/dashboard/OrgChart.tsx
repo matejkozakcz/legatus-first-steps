@@ -10,6 +10,7 @@ import { paletteForLevel } from "./RoleBadge";
 interface UserNode {
   id: string;
   full_name: string | null;
+  email: string | null;
   avatar_url: string | null;
   role_key: string | null;
   manager_id: string | null;
