@@ -207,7 +207,7 @@ function ChildrenBranch(props: { items: UserNode[] } & Omit<RenderProps, "node" 
 }
 
 function TreeNode(props: RenderProps) {
-  const { node, childrenMap, collapsed, toggle, depth, bjMap, roleLabel, roleColor, canImpersonateFn, onImpersonate } = props;
+  const { node, childrenMap, collapsed, toggle, depth, bjMap, unitLabel, roleLabel, roleColor, canImpersonateFn, onImpersonate } = props;
   const kids = childrenMap.get(node.id) || [];
   const isCol = collapsed.has(node.id);
 
@@ -216,6 +216,7 @@ function TreeNode(props: RenderProps) {
       <NodeCard
         node={node}
         bj={bjMap.get(node.id) || 0}
+        unitLabel={unitLabel}
         roleLabel={roleLabel(node.role_key)}
         roleColor={roleColor(node.role_key)}
         canImpersonate={canImpersonateFn(node)}
