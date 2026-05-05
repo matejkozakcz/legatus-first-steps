@@ -30,7 +30,7 @@ export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: Period
   const chevronColor = "var(--deep-hex)";
 
   return (
-    <div className={isMobile ? "flex flex-col items-center gap-2 w-full" : "flex items-center gap-3"}>
+    <div className={isMobile ? "flex flex-col-reverse items-center gap-2 w-full" : "flex items-center gap-3"}>
       <div
         className="inline-flex rounded-xl p-1"
         style={{
