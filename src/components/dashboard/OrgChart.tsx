@@ -110,11 +110,15 @@ function NodeCard({
           </div>
         )}
       </div>
-      <p className="font-heading font-semibold text-center leading-tight px-2 mt-2 text-foreground" style={{ fontSize: 13 }}>
-        {node.full_name || "—"}
+      <p
+        className="font-heading font-semibold text-center leading-tight px-2 mt-2 text-foreground truncate w-full"
+        style={{ fontSize: 13 }}
+        title={node.email || undefined}
+      >
+        {node.full_name || node.email || "—"}
       </p>
       <p className="text-center font-heading font-semibold mt-0.5" style={{ fontSize: 11, color: roleColor }}>
-        {bj.toLocaleString("cs-CZ")} BJ tým
+        {bj.toLocaleString("cs-CZ")} {unitLabel} tým
       </p>
     </div>
   );
