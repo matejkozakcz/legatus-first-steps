@@ -142,10 +142,7 @@ export function AppSidebar() {
                       to="/admin"
                       className={`nav-item ${pathname.startsWith("/admin") ? "active" : ""}`}
                     >
-                      <div className="relative flex-shrink-0">
-                        <Shield className="h-[18px] w-[18px]" />
-                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 border border-background" />
-                      </div>
+                      <Shield className="h-[18px] w-[18px] flex-shrink-0" />
                       {!collapsed && <span>Admin</span>}
                     </Link>
                   </SidebarMenuButton>
