@@ -10,6 +10,7 @@ import { paletteForLevel } from "./RoleBadge";
 interface UserNode {
   id: string;
   full_name: string | null;
+  email: string | null;
   avatar_url: string | null;
   role_key: string | null;
   manager_id: string | null;
@@ -26,6 +27,7 @@ const LINE = "hsl(var(--border))";
 function NodeCard({
   node,
   bj,
+  unitLabel,
   roleLabel,
   roleColor,
   canImpersonate,
@@ -33,6 +35,7 @@ function NodeCard({
 }: {
   node: UserNode;
   bj: number;
+  unitLabel: string;
   roleLabel: string;
   roleColor: string;
   canImpersonate: boolean;
@@ -107,11 +110,15 @@ function NodeCard({
           </div>
         )}
       </div>
-      <p className="font-heading font-semibold text-center leading-tight px-2 mt-2 text-foreground" style={{ fontSize: 13 }}>
-        {node.full_name || "—"}
+      <p
+        className="font-heading font-semibold text-center leading-tight px-2 mt-2 text-foreground truncate w-full"
+        style={{ fontSize: 13 }}
+        title={node.email || undefined}
+      >
+        {node.full_name || node.email || "—"}
       </p>
       <p className="text-center font-heading font-semibold mt-0.5" style={{ fontSize: 11, color: roleColor }}>
-        {bj.toLocaleString("cs-CZ")} BJ tým
+        {bj.toLocaleString("cs-CZ")} {unitLabel} tým
       </p>
     </div>
   );
@@ -142,6 +149,7 @@ interface RenderProps {
   toggle: (id: string) => void;
   depth: number;
   bjMap: Map<string, number>;
+  unitLabel: string;
   roleLabel: (key: string | null) => string;
   roleColor: (key: string | null) => string;
   canImpersonateFn: (n: UserNode) => boolean;
@@ -199,7 +207,7 @@ function ChildrenBranch(props: { items: UserNode[] } & Omit<RenderProps, "node" 
 }
 
 function TreeNode(props: RenderProps) {
-  const { node, childrenMap, collapsed, toggle, depth, bjMap, roleLabel, roleColor, canImpersonateFn, onImpersonate } = props;
+  const { node, childrenMap, collapsed, toggle, depth, bjMap, unitLabel, roleLabel, roleColor, canImpersonateFn, onImpersonate } = props;
   const kids = childrenMap.get(node.id) || [];
   const isCol = collapsed.has(node.id);
 
@@ -208,6 +216,7 @@ function TreeNode(props: RenderProps) {
       <NodeCard
         node={node}
         bj={bjMap.get(node.id) || 0}
+        unitLabel={unitLabel}
         roleLabel={roleLabel(node.role_key)}
         roleColor={roleColor(node.role_key)}
         canImpersonate={canImpersonateFn(node)}
@@ -233,6 +242,7 @@ function TreeNode(props: RenderProps) {
                 toggle={toggle}
                 depth={depth + 1}
                 bjMap={bjMap}
+                unitLabel={unitLabel}
                 roleLabel={roleLabel}
                 roleColor={roleColor}
                 canImpersonateFn={canImpersonateFn}
@@ -247,10 +257,11 @@ function TreeNode(props: RenderProps) {
 }
 
 export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProps) {
-  const { workspace, user, isLegatusAdmin } = useWorkspace();
+  const { workspace, user, productionUnit, isLegatusAdmin } = useWorkspace();
   const { roles, currentLevel } = useRoles();
   const [zoom, setZoom] = useState(1);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const unitLabel = productionUnit?.key ?? productionUnit?.label ?? "BJ";
 
   const { data: users = [] } = useQuery({
     queryKey: ["org_users", workspace?.id],
@@ -258,7 +269,7 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from("users")
-        .select("id, full_name, avatar_url, role_key, manager_id")
+        .select("id, full_name, email, avatar_url, role_key, manager_id")
         .eq("workspace_id", workspace.id)
         .eq("is_active", true);
       if (error) throw error;
@@ -367,7 +378,16 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
       </div>
       <div className="overflow-auto w-full h-full p-4">
         <div style={{ transform: `scale(${zoom})`, transformOrigin: "top center", transition: "transform 0.2s" }}>
-          {roots.length === 0 ? (
+          {users.length <= 1 ? (
+            <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-4">
+              <p className="text-sm text-muted-foreground max-w-[300px]">
+                Zatím nemáš tým. Pozvi prvního člena přes Správu týmu.
+              </p>
+              <Button asChild size="sm" className="bg-[#fc7c71] hover:bg-[#e05a50] text-white">
+                <a href="/nastaveni/tym">Pozvat člena</a>
+              </Button>
+            </div>
+          ) : roots.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-12">Žádní členové týmu.</p>
           ) : (
             <div className="flex flex-col items-center gap-12">
@@ -380,6 +400,7 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
                   toggle={toggle}
                   depth={0}
                   bjMap={teamBj}
+                  unitLabel={unitLabel}
                   roleLabel={roleLabel}
                   roleColor={roleColor}
                   canImpersonateFn={canImpersonateFn}

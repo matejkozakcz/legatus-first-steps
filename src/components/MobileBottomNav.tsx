@@ -1,28 +1,34 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Briefcase, Users } from "lucide-react";
-import { useWorkspace } from "@/hooks/useWorkspace";
+import { Briefcase, Users, LayoutDashboard, Plus, Phone } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useNewMeetingModal } from "@/components/NewMeetingModal";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { user: profile } = useWorkspace();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { open: openNewMeeting } = useNewMeetingModal();
+  const { isImpersonating } = useImpersonation();
 
-  const initials =
-    profile?.full_name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2) || "?";
-
-  const isDashboardActive = pathname === "/dashboard";
-  const avatarBorder = isDashboardActive ? "3px solid #00abbd" : "3px solid white";
-  const avatarShadow = isDashboardActive
-    ? "0 4px 20px rgba(0,171,189,0.4)"
-    : "0 4px 20px rgba(0,85,95,0.25)";
+  // Context-aware FAB
+  const fab = (() => {
+    if (pathname.startsWith("/call-party")) {
+      return {
+        icon: Phone,
+        label: "Hovor",
+        onClick: () => navigate({ to: "/call-party" }),
+        disabled: false,
+      };
+    }
+    return {
+      icon: Plus,
+      label: "Schůzka",
+      onClick: () => openNewMeeting(),
+      disabled: isImpersonating,
+    };
+  })();
 
   return (
     <div
@@ -63,9 +69,13 @@ export function MobileBottomNav() {
           onClick={() => navigate({ to: "/nastaveni/tym" })}
           isDark={isDark}
         />
-
-        <div style={{ flex: 1 }} />
-
+        <NavButton
+          icon={LayoutDashboard}
+          label="Dashboard"
+          active={pathname === "/dashboard"}
+          onClick={() => navigate({ to: "/dashboard" })}
+          isDark={isDark}
+        />
         <NavButton
           icon={Briefcase}
           label="Byznys"
@@ -74,72 +84,41 @@ export function MobileBottomNav() {
           isDark={isDark}
         />
 
-        <div
+      </div>
+
+      {/* Floating context-aware FAB — outside the pill */}
+      <div
+        style={{
+          position: "absolute",
+          right: 24,
+          bottom: "calc(82px + env(safe-area-inset-bottom, 0px))",
+          pointerEvents: "all",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onClick={fab.onClick}
+          disabled={fab.disabled}
+          aria-label={fab.label}
           style={{
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-            top: -22,
-            pointerEvents: "all",
+            width: 58,
+            height: 58,
+            borderRadius: "50%",
+            border: "none",
+            background: fab.disabled ? "#9aa6a8" : "#fc7c71",
+            color: "white",
+            boxShadow: "0 8px 24px rgba(252,124,113,0.5)",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
+            cursor: fab.disabled ? "not-allowed" : "pointer",
+            opacity: fab.disabled ? 0.6 : 1,
           }}
         >
-          <button
-            onClick={() => navigate({ to: "/dashboard" })}
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: "50%",
-              border: avatarBorder,
-              boxShadow: avatarShadow,
-              overflow: "hidden",
-              cursor: "pointer",
-              background: "#00555f",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.25s",
-              WebkitTapHighlightColor: "transparent",
-              userSelect: "none",
-            }}
-            aria-label="Dashboard"
-          >
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt={initials}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
-              <span
-                style={{
-                  fontFamily: "Poppins, sans-serif",
-                  fontWeight: 700,
-                  fontSize: 18,
-                  color: "white",
-                  lineHeight: 1,
-                }}
-              >
-                {initials}
-              </span>
-            )}
-          </button>
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: 5,
-              fontSize: 10,
-              fontWeight: 600,
-              color: isDark ? "#4a7a80" : "#8aadb3",
-              letterSpacing: "0.02em",
-              fontFamily: "Open Sans, sans-serif",
-            }}
-          >
-            Dashboard
-          </div>
-        </div>
+          <fab.icon size={26} />
+        </button>
       </div>
     </div>
   );
@@ -171,12 +150,11 @@ function NavButton({
         alignItems: "center",
         gap: 3,
         cursor: "pointer",
-        padding: "8px 20px",
+        padding: "8px 12px",
         borderRadius: 30,
         border: "none",
         background: "transparent",
         flex: 1,
-        position: "relative",
       }}
     >
       <Icon size={22} color={color} style={{ transition: "color 0.2s" }} />

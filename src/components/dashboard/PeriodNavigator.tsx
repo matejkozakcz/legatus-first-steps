@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { PeriodMode } from "./PeriodSwitcher";
 
 interface PeriodNavigatorProps {
@@ -12,6 +13,7 @@ interface PeriodNavigatorProps {
 
 export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: PeriodNavigatorProps) {
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   const isDark = theme === "dark";
 
   const btn = {
@@ -28,7 +30,7 @@ export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: Period
   const chevronColor = "var(--deep-hex)";
 
   return (
-    <div className="flex items-center gap-3">
+    <div className={isMobile ? "flex flex-col-reverse items-center gap-2 w-full" : "flex items-center gap-3"}>
       <div
         className="inline-flex rounded-xl p-1"
         style={{
@@ -59,7 +61,7 @@ export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: Period
           borderRadius: 16,
           padding: "6px 10px",
           border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e1e9eb",
-          minWidth: 280,
+          minWidth: isMobile ? 220 : 280,
           gap: 8,
         }}
       >

@@ -201,41 +201,50 @@ function Dashboard() {
         newMeetingDisabledReason={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
       />
 
-      <main className="px-6 py-6 space-y-6">
+      <main className="px-4 sm:px-6 py-6 space-y-6">
         {/* Goals + Org Chart */}
         <div className="grid gap-6 lg:grid-cols-[35%_1fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-heading">Cíle</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-6 pt-2">
-              {gauges.map((g) => (
-                <GaugeIndicator
-                  key={g.label}
-                  label={g.label}
-                  value={g.value}
-                  target={g.target}
-                  color={g.color}
-                  unit={g.unit}
-                />
-              ))}
-            </CardContent>
-          </Card>
+          <section className="legatus-card !p-0">
+            <header className="px-6 pt-5 pb-3">
+              <h2 className="text-lg font-heading font-semibold text-[color:var(--deep-hex)]">Cíle</h2>
+            </header>
+            <div className="grid grid-cols-1 gap-6 px-6 pb-6 pt-2">
+              {goals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center gap-3 py-6">
+                  <p className="text-sm text-muted-foreground max-w-[260px]">
+                    Ještě nemáš nastavené cíle pro tohle období.
+                  </p>
+                  <Button asChild size="sm" className="bg-[#fc7c71] hover:bg-[#e05a50] text-white">
+                    <Link to="/cile">Nastavit cíl</Link>
+                  </Button>
+                </div>
+              ) : (
+                gauges.map((g) => (
+                  <GaugeIndicator
+                    key={g.label}
+                    label={g.label}
+                    value={g.value}
+                    target={g.target}
+                    color={g.color}
+                    unit={g.unit}
+                  />
+                ))
+              )}
+            </div>
+          </section>
 
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-lg font-heading">Tým</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div style={{ height: 560 }}>
-                <OrgChart
-                  periodStart={period.startStr}
-                  periodEnd={period.endStr}
-                  onImpersonate={(id, name) => void startImpersonate(id, name)}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <section className="legatus-card !p-0 overflow-hidden">
+            <header className="px-6 pt-5 pb-3">
+              <h2 className="text-lg font-heading font-semibold text-[color:var(--deep-hex)]">Tým</h2>
+            </header>
+            <div style={{ height: 560 }}>
+              <OrgChart
+                periodStart={period.startStr}
+                periodEnd={period.endStr}
+                onImpersonate={(id, name) => void startImpersonate(id, name)}
+              />
+            </div>
+          </section>
         </div>
 
         {/* Activity cards by meeting type */}
@@ -257,16 +266,16 @@ function Dashboard() {
         )}
 
         {/* Doporučení breakdown */}
-        <Card>
-          <CardHeader>
+        <section className="legatus-card !p-0">
+          <header className="px-6 pt-5 pb-3">
             <div className="flex items-baseline justify-between">
-              <CardTitle className="text-lg font-heading">Doporučení</CardTitle>
+              <h2 className="text-lg font-heading font-semibold text-[color:var(--deep-hex)]">Doporučení</h2>
               <div className="font-heading font-bold text-3xl text-[color:var(--deep-hex)]">
                 {totalReferrals}
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
+          </header>
+          <div className="px-6 pb-6">
             {meetingTypes.length === 0 ? (
               <p className="text-sm text-muted-foreground">Žádné typy schůzek nejsou nakonfigurovány.</p>
             ) : (
@@ -294,8 +303,8 @@ function Dashboard() {
                 })}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </main>
     </div>
   );
