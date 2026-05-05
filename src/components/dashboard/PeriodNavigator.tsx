@@ -13,6 +13,7 @@ interface PeriodNavigatorProps {
 
 export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: PeriodNavigatorProps) {
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   const isDark = theme === "dark";
 
   const btn = {
