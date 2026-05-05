@@ -266,16 +266,16 @@ function Dashboard() {
         )}
 
         {/* Doporučení breakdown */}
-        <Card className="legatus-card !p-0">
-          <CardHeader>
+        <section className="legatus-card !p-0">
+          <header className="px-6 pt-5 pb-3">
             <div className="flex items-baseline justify-between">
-              <CardTitle className="text-lg font-heading text-[color:var(--deep-hex)]">Doporučení</CardTitle>
+              <h2 className="text-lg font-heading font-semibold text-[color:var(--deep-hex)]">Doporučení</h2>
               <div className="font-heading font-bold text-3xl text-[color:var(--deep-hex)]">
                 {totalReferrals}
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
+          </header>
+          <div className="px-6 pb-6">
             {meetingTypes.length === 0 ? (
               <p className="text-sm text-muted-foreground">Žádné typy schůzek nejsou nakonfigurovány.</p>
             ) : (
@@ -303,8 +303,8 @@ function Dashboard() {
                 })}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </main>
     </div>
   );
