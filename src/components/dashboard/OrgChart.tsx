@@ -378,7 +378,16 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
       </div>
       <div className="overflow-auto w-full h-full p-4">
         <div style={{ transform: `scale(${zoom})`, transformOrigin: "top center", transition: "transform 0.2s" }}>
-          {roots.length === 0 ? (
+          {users.length <= 1 ? (
+            <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-4">
+              <p className="text-sm text-muted-foreground max-w-[300px]">
+                Zatím nemáš tým. Pozvi prvního člena přes Správu týmu.
+              </p>
+              <Button asChild size="sm" className="bg-[#fc7c71] hover:bg-[#e05a50] text-white">
+                <a href="/nastaveni/tym">Pozvat člena</a>
+              </Button>
+            </div>
+          ) : roots.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-12">Žádní členové týmu.</p>
           ) : (
             <div className="flex flex-col items-center gap-12">
@@ -391,6 +400,7 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
                   toggle={toggle}
                   depth={0}
                   bjMap={teamBj}
+                  unitLabel={unitLabel}
                   roleLabel={roleLabel}
                   roleColor={roleColor}
                   canImpersonateFn={canImpersonateFn}
