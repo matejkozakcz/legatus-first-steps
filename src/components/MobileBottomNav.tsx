@@ -84,54 +84,41 @@ export function MobileBottomNav() {
           isDark={isDark}
         />
 
-        {/* Floating context-aware FAB */}
-        <div
+      </div>
+
+      {/* Floating context-aware FAB — outside the pill */}
+      <div
+        style={{
+          position: "absolute",
+          right: 24,
+          bottom: "calc(82px + env(safe-area-inset-bottom, 0px))",
+          pointerEvents: "all",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onClick={fab.onClick}
+          disabled={fab.disabled}
+          aria-label={fab.label}
           style={{
-            position: "absolute",
-            right: 8,
-            top: -22,
-            pointerEvents: "all",
+            width: 58,
+            height: 58,
+            borderRadius: "50%",
+            border: "none",
+            background: fab.disabled ? "#9aa6a8" : "#fc7c71",
+            color: "white",
+            boxShadow: "0 8px 24px rgba(252,124,113,0.5)",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
+            cursor: fab.disabled ? "not-allowed" : "pointer",
+            opacity: fab.disabled ? 0.6 : 1,
           }}
         >
-          <button
-            onClick={fab.onClick}
-            disabled={fab.disabled}
-            aria-label={fab.label}
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: "50%",
-              border: "none",
-              background: fab.disabled ? "#9aa6a8" : "#fc7c71",
-              color: "white",
-              boxShadow: "0 6px 20px rgba(252,124,113,0.45)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: fab.disabled ? "not-allowed" : "pointer",
-              transition: "all 0.2s",
-              opacity: fab.disabled ? 0.6 : 1,
-            }}
-          >
-            <fab.icon size={26} />
-          </button>
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: 5,
-              fontSize: 10,
-              fontWeight: 600,
-              color: isDark ? "#4a7a80" : "#8aadb3",
-              letterSpacing: "0.02em",
-              fontFamily: "Open Sans, sans-serif",
-            }}
-          >
-            {fab.label}
-          </div>
-        </div>
+          <fab.icon size={26} />
+        </button>
       </div>
     </div>
   );
