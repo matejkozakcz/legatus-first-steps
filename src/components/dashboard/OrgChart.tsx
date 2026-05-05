@@ -257,10 +257,11 @@ function TreeNode(props: RenderProps) {
 }
 
 export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProps) {
-  const { workspace, user, isLegatusAdmin } = useWorkspace();
+  const { workspace, user, productionUnit, isLegatusAdmin } = useWorkspace();
   const { roles, currentLevel } = useRoles();
   const [zoom, setZoom] = useState(1);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const unitLabel = productionUnit?.key ?? productionUnit?.label ?? "BJ";
 
   const { data: users = [] } = useQuery({
     queryKey: ["org_users", workspace?.id],
@@ -268,7 +269,7 @@ export function OrgChart({ periodStart, periodEnd, onImpersonate }: OrgChartProp
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from("users")
-        .select("id, full_name, avatar_url, role_key, manager_id")
+        .select("id, full_name, email, avatar_url, role_key, manager_id")
         .eq("workspace_id", workspace.id)
         .eq("is_active", true);
       if (error) throw error;
