@@ -268,10 +268,10 @@ function Dashboard() {
         )}
 
         {/* Doporučení breakdown */}
-        <Card>
+        <Card className="legatus-card !p-0">
           <CardHeader>
             <div className="flex items-baseline justify-between">
-              <CardTitle className="text-lg font-heading">Doporučení</CardTitle>
+              <CardTitle className="text-lg font-heading text-[color:var(--deep-hex)]">Doporučení</CardTitle>
               <div className="font-heading font-bold text-3xl text-[color:var(--deep-hex)]">
                 {totalReferrals}
               </div>
