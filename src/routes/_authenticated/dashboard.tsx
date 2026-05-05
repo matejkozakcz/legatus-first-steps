@@ -201,30 +201,41 @@ function Dashboard() {
         newMeetingDisabledReason={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
       />
 
-      <main className="px-6 py-6 space-y-6">
+      <main className="px-4 sm:px-6 py-6 space-y-6">
         {/* Goals + Org Chart */}
         <div className="grid gap-6 lg:grid-cols-[35%_1fr]">
-          <Card>
+          <Card className="legatus-card !p-0">
             <CardHeader>
-              <CardTitle className="text-lg font-heading">Cíle</CardTitle>
+              <CardTitle className="text-lg font-heading text-[color:var(--deep-hex)]">Cíle</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-6 pt-2">
-              {gauges.map((g) => (
-                <GaugeIndicator
-                  key={g.label}
-                  label={g.label}
-                  value={g.value}
-                  target={g.target}
-                  color={g.color}
-                  unit={g.unit}
-                />
-              ))}
+              {goals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center gap-3 py-6">
+                  <p className="text-sm text-muted-foreground max-w-[260px]">
+                    Ještě nemáš nastavené cíle pro tohle období.
+                  </p>
+                  <Button asChild size="sm" className="bg-[#fc7c71] hover:bg-[#e05a50] text-white">
+                    <Link to="/cile">Nastavit cíl</Link>
+                  </Button>
+                </div>
+              ) : (
+                gauges.map((g) => (
+                  <GaugeIndicator
+                    key={g.label}
+                    label={g.label}
+                    value={g.value}
+                    target={g.target}
+                    color={g.color}
+                    unit={g.unit}
+                  />
+                ))
+              )}
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden">
+          <Card className="legatus-card !p-0 overflow-hidden">
             <CardHeader>
-              <CardTitle className="text-lg font-heading">Tým</CardTitle>
+              <CardTitle className="text-lg font-heading text-[color:var(--deep-hex)]">Tým</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div style={{ height: 560 }}>
