@@ -61,7 +61,7 @@ export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: Period
           borderRadius: 16,
           padding: "6px 10px",
           border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e1e9eb",
-          minWidth: 280,
+          minWidth: isMobile ? 220 : 280,
           gap: 8,
         }}
       >
