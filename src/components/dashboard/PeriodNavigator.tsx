@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { PeriodMode } from "./PeriodSwitcher";
 
 interface PeriodNavigatorProps {
