@@ -25,7 +25,7 @@ export function PeriodNavigator({ mode, setMode, label, onPrev, onNext }: Period
     alignItems: "center" as const,
     justifyContent: "center" as const,
   };
-  const chevronColor = isDark ? "#4dd8e8" : "#00555f";
+  const chevronColor = "var(--deep-hex)";
 
   return (
     <div className="flex items-center gap-3">

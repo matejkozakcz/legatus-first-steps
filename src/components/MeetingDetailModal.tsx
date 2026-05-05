@@ -176,7 +176,7 @@ function MeetingDetailModal({
         <DialogContent className="legatus-modal-glass max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 sm:rounded-[28px]">
           <DialogHeader className="px-6 pt-6 pb-3 border-b border-white/30 dark:border-white/10">
             <div className="flex items-center justify-between gap-3 pr-8">
-              <DialogTitle className="font-heading text-xl tracking-wide text-[#00555f] dark:text-white">
+              <DialogTitle className="font-heading text-xl tracking-wide text-[color:var(--deep-hex)]">
                 Detail schůzky
               </DialogTitle>
               {meeting && !editing && meeting.user_id === user?.id && (

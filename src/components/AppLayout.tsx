@@ -77,7 +77,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
             aria-label="Nastavení"
             style={floatBtn}
           >
-            <Settings size={17} color={isDark ? "#4dd8e8" : "#00555f"} />
+            <Settings size={17} color="var(--deep-hex)" />
           </button>
           <button
             onClick={toggleTheme}
@@ -87,7 +87,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
             {isDark ? (
               <Sun size={17} color="#f5c842" />
             ) : (
-              <Moon size={17} color="#00555f" />
+              <Moon size={17} color="var(--deep-hex)" />
             )}
           </button>
         </div>

@@ -109,6 +109,7 @@
   --input: 190 18% 91%;
   --ring: 186 100% 37%;
   --radius: 0.75rem;
+  --deep-hex: #00555f;
 
   /* Sidebar */
   --sidebar-background: 0 0% 100%;
@@ -180,6 +181,7 @@
   --text-primary: #cde4e7;
   --text-secondary: #b9d4d8;
   --text-muted: #8fb6bc;
+  --deep-hex: #4dd8e8;
 
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.45);
