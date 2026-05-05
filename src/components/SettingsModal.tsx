@@ -40,7 +40,7 @@ function SettingsModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="legatus-modal-glass max-w-xl max-h-[90vh] overflow-y-auto p-0 border-0 sm:rounded-[28px]">
         <DialogHeader className="px-6 pt-6 pb-3">
-          <DialogTitle className="font-heading text-xl tracking-wide text-[#00555f] dark:text-white">
+          <DialogTitle className="font-heading text-xl tracking-wide text-[color:var(--deep-hex)]">
             Nastavení
           </DialogTitle>
           <p className="text-xs text-muted-foreground">{user?.email}</p>

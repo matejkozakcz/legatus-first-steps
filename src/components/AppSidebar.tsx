@@ -93,7 +93,7 @@ export function AppSidebar() {
             style={{ filter: "brightness(0) saturate(100%) invert(22%) sepia(35%) saturate(1500%) hue-rotate(155deg) brightness(95%) contrast(101%)" }}
           />
           {!collapsed && (
-            <span className="font-heading font-bold text-[20px] leading-tight tracking-[0.2em] truncate text-[#00555f] dark:text-white">
+            <span className="font-heading font-bold text-[20px] leading-tight tracking-[0.2em] truncate text-[color:var(--deep-hex)]">
               LEGATUS
             </span>
           )}
@@ -210,7 +210,7 @@ export function AppSidebar() {
             />
           ) : (
             <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-[rgba(0,85,95,0.1)] dark:bg-white/10">
-              <span className="text-[13px] font-heading font-semibold text-[#00555f] dark:text-white/85">
+              <span className="text-[13px] font-heading font-semibold text-[color:var(--deep-hex)]/85">
                 {initials}
               </span>
             </div>

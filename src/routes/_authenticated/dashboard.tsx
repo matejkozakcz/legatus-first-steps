@@ -187,7 +187,7 @@ function Dashboard() {
       <header className="border-b bg-card">
         <div className="px-6 py-4 flex items-center gap-4 flex-wrap">
           <h1
-            className="font-heading font-bold tracking-[0.2em] text-[#00555f] dark:text-white"
+            className="font-heading font-bold tracking-[0.2em] text-[color:var(--deep-hex)]"
             style={{ fontSize: 22 }}
           >
             DASHBOARD
@@ -284,7 +284,7 @@ function Dashboard() {
           <CardHeader>
             <div className="flex items-baseline justify-between">
               <CardTitle className="text-lg font-heading">Doporučení</CardTitle>
-              <div className="font-heading font-bold text-3xl text-[#00555f] dark:text-white">
+              <div className="font-heading font-bold text-3xl text-[color:var(--deep-hex)]">
                 {totalReferrals}
               </div>
             </div>

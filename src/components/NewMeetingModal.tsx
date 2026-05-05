@@ -218,7 +218,7 @@ function NewMeetingModal({
         >
           <DialogHeader className="px-6 pt-6 pb-4">
             <div className="flex items-center justify-between gap-3">
-              <DialogTitle className="font-heading text-xl tracking-wide text-[#00555f] dark:text-white">
+              <DialogTitle className="font-heading text-xl tracking-wide text-[color:var(--deep-hex)]">
                 Nová schůzka
               </DialogTitle>
               {cancelled && <Badge variant="destructive">ZRUŠENA</Badge>}
@@ -352,7 +352,7 @@ function NewMeetingModal({
 
             {!cancelled && selectedType && selectedType.result_fields?.length > 0 && (
               <div className="space-y-3 rounded-xl border bg-card/40 p-4">
-                <div className="text-sm font-heading font-semibold text-[#00555f] dark:text-white">
+                <div className="text-sm font-heading font-semibold text-[color:var(--deep-hex)]">
                   Výsledek schůzky
                 </div>
                 {selectedType.result_fields.map((field) => {
