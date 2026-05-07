@@ -18,6 +18,7 @@ import {
 import { Bell, User as UserIcon, Camera, Lock, ChevronDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { resizeImageToJpeg } from "@/lib/imageUtils";
 
 interface Ctx { open: () => void; close: () => void }
 const SettingsCtx = createContext<Ctx | null>(null);
