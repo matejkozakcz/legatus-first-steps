@@ -196,6 +196,8 @@ function Dashboard() {
         label={period.label}
         onPrev={() => shift(-1)}
         onNext={() => shift(1)}
+        selectedDate={anchor}
+        onSelectDate={(d) => setAnchor(d)}
         onNewMeeting={() => openNewMeeting()}
         canCreateMeeting={hasConsent}
         newMeetingDisabledReason={!hasConsent ? "Nejprve potvrď GDPR souhlas" : undefined}
