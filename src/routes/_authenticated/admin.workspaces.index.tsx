@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
+import { WorkspaceDetailModal } from "@/components/admin/WorkspaceDetailModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,6 +95,7 @@ function WorkspacesList() {
   const [rows, setRows] = useState<WorkspaceRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openNew, setOpenNew] = useState(false);
+  const [detailWs, setDetailWs] = useState<WorkspaceRow | null>(null);
   const { refresh } = useWorkspaceContext();
 
   const load = async () => {
@@ -273,10 +275,13 @@ function WorkspacesList() {
                 </div>
 
                 <div className="flex items-center gap-2 pt-1">
-                  <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link to="/admin/workspaces/$id" params={{ id: w.id }}>
-                      Detail
-                    </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setDetailWs(w)}
+                  >
+                    Detail
                   </Button>
                   <Button
                     size="sm"
