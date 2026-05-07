@@ -8,7 +8,7 @@ import { ArrowLeft, Copy, RefreshCw, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/workspaces/$id")({
+export const Route = createFileRoute("/_authenticated/admin/workspaces/$id")({
   component: WorkspaceDetail,
 });
 

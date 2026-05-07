@@ -36,7 +36,7 @@ interface Template {
   default_production_unit: unknown;
 }
 
-export const Route = createFileRoute("/admin/templates")({
+export const Route = createFileRoute("/_authenticated/admin/templates")({
   component: TemplatesList,
 });
 
