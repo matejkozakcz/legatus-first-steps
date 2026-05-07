@@ -27,7 +27,6 @@ import { Route as AuthenticatedNastaveniTymRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminTemplatesRouteImport } from './routes/_authenticated/admin.templates'
 import { Route as AuthenticatedAdminWorkspacesIndexRouteImport } from './routes/_authenticated/admin.workspaces.index'
 import { Route as AuthenticatedCallPartyEventsIdRouteImport } from './routes/_authenticated/call-party.events.$id'
-import { Route as AuthenticatedAdminWorkspacesIdRouteImport } from './routes/_authenticated/admin.workspaces.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -124,12 +123,6 @@ const AuthenticatedCallPartyEventsIdRoute =
     path: '/events/$id',
     getParentRoute: () => AuthenticatedCallPartyRoute,
   } as any)
-const AuthenticatedAdminWorkspacesIdRoute =
-  AuthenticatedAdminWorkspacesIdRouteImport.update({
-    id: '/workspaces/$id',
-    path: '/workspaces/$id',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -147,7 +140,6 @@ export interface FileRoutesByFullPath {
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
-  '/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
   '/admin/workspaces/': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
@@ -166,7 +158,6 @@ export interface FileRoutesByTo {
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/schuzky': typeof AuthenticatedSchuzkyIndexRoute
-  '/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
   '/admin/workspaces': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
@@ -188,7 +179,6 @@ export interface FileRoutesById {
   '/_authenticated/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
-  '/_authenticated/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/_authenticated/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
   '/_authenticated/admin/workspaces/': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
@@ -210,7 +200,6 @@ export interface FileRouteTypes {
     | '/schuzky/nova'
     | '/admin/'
     | '/schuzky/'
-    | '/admin/workspaces/$id'
     | '/call-party/events/$id'
     | '/admin/workspaces/'
   fileRoutesByTo: FileRoutesByTo
@@ -229,7 +218,6 @@ export interface FileRouteTypes {
     | '/schuzky/nova'
     | '/admin'
     | '/schuzky'
-    | '/admin/workspaces/$id'
     | '/call-party/events/$id'
     | '/admin/workspaces'
   id:
@@ -250,7 +238,6 @@ export interface FileRouteTypes {
     | '/_authenticated/schuzky/nova'
     | '/_authenticated/admin/'
     | '/_authenticated/schuzky/'
-    | '/_authenticated/admin/workspaces/$id'
     | '/_authenticated/call-party/events/$id'
     | '/_authenticated/admin/workspaces/'
   fileRoutesById: FileRoutesById
@@ -390,27 +377,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCallPartyEventsIdRouteImport
       parentRoute: typeof AuthenticatedCallPartyRoute
     }
-    '/_authenticated/admin/workspaces/$id': {
-      id: '/_authenticated/admin/workspaces/$id'
-      path: '/workspaces/$id'
-      fullPath: '/admin/workspaces/$id'
-      preLoaderRoute: typeof AuthenticatedAdminWorkspacesIdRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminTemplatesRoute: typeof AuthenticatedAdminTemplatesRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-  AuthenticatedAdminWorkspacesIdRoute: typeof AuthenticatedAdminWorkspacesIdRoute
   AuthenticatedAdminWorkspacesIndexRoute: typeof AuthenticatedAdminWorkspacesIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminTemplatesRoute: AuthenticatedAdminTemplatesRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-  AuthenticatedAdminWorkspacesIdRoute: AuthenticatedAdminWorkspacesIdRoute,
   AuthenticatedAdminWorkspacesIndexRoute:
     AuthenticatedAdminWorkspacesIndexRoute,
 }
