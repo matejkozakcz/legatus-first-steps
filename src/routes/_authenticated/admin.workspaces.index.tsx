@@ -297,6 +297,25 @@ function WorkspacesList() {
           })}
         </div>
       )}
+
+      {detailWs && (
+        <WorkspaceDetailModal
+          workspace={{
+            id: detailWs.id,
+            name: detailWs.name,
+            slug: detailWs.slug,
+            status: detailWs.status,
+            plan: detailWs.plan,
+            invite_token: detailWs.invite_token,
+            owner_user_id: detailWs.owner_user_id,
+          }}
+          open={!!detailWs}
+          onClose={() => {
+            setDetailWs(null);
+            void load();
+          }}
+        />
+      )}
     </div>
   );
 }
