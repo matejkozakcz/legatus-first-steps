@@ -54,7 +54,7 @@ interface ProductionUnit {
 }
 
 function WorkspaceDetail() {
-  const { id } = useParams({ from: "/admin/workspaces/$id" });
+  const { id } = useParams({ from: "/_authenticated/admin/workspaces/$id" });
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [config, setConfig] = useState<ConfigRow | null>(null);
   const [prodUnits, setProdUnits] = useState<ProductionUnit[]>([]);
