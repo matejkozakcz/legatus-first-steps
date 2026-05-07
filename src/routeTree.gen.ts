@@ -10,33 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
-import { Route as AdminTemplatesRouteImport } from './routes/admin.templates'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCileRouteImport } from './routes/_authenticated/cile'
 import { Route as AuthenticatedCallPartyRouteImport } from './routes/_authenticated/call-party'
-import { Route as AdminWorkspacesIndexRouteImport } from './routes/admin.workspaces.index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedSchuzkyIndexRouteImport } from './routes/_authenticated/schuzky.index'
-import { Route as AdminWorkspacesIdRouteImport } from './routes/admin.workspaces.$id'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedSchuzkyNovaRouteImport } from './routes/_authenticated/schuzky.nova'
 import { Route as AuthenticatedSchuzkyIdRouteImport } from './routes/_authenticated/schuzky.$id'
 import { Route as AuthenticatedNastaveniTymRouteImport } from './routes/_authenticated/nastaveni.tym'
+import { Route as AuthenticatedAdminTemplatesRouteImport } from './routes/_authenticated/admin.templates'
+import { Route as AuthenticatedAdminWorkspacesIndexRouteImport } from './routes/_authenticated/admin.workspaces.index'
 import { Route as AuthenticatedCallPartyEventsIdRouteImport } from './routes/_authenticated/call-party.events.$id'
+import { Route as AuthenticatedAdminWorkspacesIdRouteImport } from './routes/_authenticated/admin.workspaces.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -48,20 +43,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const JoinTokenRoute = JoinTokenRouteImport.update({
   id: '/join/$token',
   path: '/join/$token',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
-  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
   id: '/setup',
@@ -88,10 +73,10 @@ const AuthenticatedCallPartyRoute = AuthenticatedCallPartyRouteImport.update({
   path: '/call-party',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AdminWorkspacesIndexRoute = AdminWorkspacesIndexRouteImport.update({
-  id: '/workspaces/',
-  path: '/workspaces/',
-  getParentRoute: () => AdminRoute,
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSchuzkyIndexRoute =
   AuthenticatedSchuzkyIndexRouteImport.update({
@@ -99,10 +84,10 @@ const AuthenticatedSchuzkyIndexRoute =
     path: '/schuzky/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AdminWorkspacesIdRoute = AdminWorkspacesIdRouteImport.update({
-  id: '/workspaces/$id',
-  path: '/workspaces/$id',
-  getParentRoute: () => AdminRoute,
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedSchuzkyNovaRoute =
   AuthenticatedSchuzkyNovaRouteImport.update({
@@ -121,32 +106,50 @@ const AuthenticatedNastaveniTymRoute =
     path: '/nastaveni/tym',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminTemplatesRoute =
+  AuthenticatedAdminTemplatesRouteImport.update({
+    id: '/templates',
+    path: '/templates',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminWorkspacesIndexRoute =
+  AuthenticatedAdminWorkspacesIndexRouteImport.update({
+    id: '/workspaces/',
+    path: '/workspaces/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedCallPartyEventsIdRoute =
   AuthenticatedCallPartyEventsIdRouteImport.update({
     id: '/events/$id',
     path: '/events/$id',
     getParentRoute: () => AuthenticatedCallPartyRoute,
   } as any)
+const AuthenticatedAdminWorkspacesIdRoute =
+  AuthenticatedAdminWorkspacesIdRouteImport.update({
+    id: '/workspaces/$id',
+    path: '/workspaces/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/call-party': typeof AuthenticatedCallPartyRouteWithChildren
   '/cile': typeof AuthenticatedCileRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/join/$token': typeof JoinTokenRoute
-  '/admin/': typeof AdminIndexRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
-  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
-  '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
+  '/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
+  '/admin/workspaces/': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,60 +159,60 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/setup': typeof AuthenticatedSetupRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/join/$token': typeof JoinTokenRoute
-  '/admin': typeof AdminIndexRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
-  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/schuzky': typeof AuthenticatedSchuzkyIndexRoute
-  '/admin/workspaces': typeof AdminWorkspacesIndexRoute
+  '/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
+  '/admin/workspaces': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/call-party': typeof AuthenticatedCallPartyRouteWithChildren
   '/_authenticated/cile': typeof AuthenticatedCileRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/join/$token': typeof JoinTokenRoute
-  '/admin/': typeof AdminIndexRoute
+  '/_authenticated/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/_authenticated/nastaveni/tym': typeof AuthenticatedNastaveniTymRoute
   '/_authenticated/schuzky/$id': typeof AuthenticatedSchuzkyIdRoute
   '/_authenticated/schuzky/nova': typeof AuthenticatedSchuzkyNovaRoute
-  '/admin/workspaces/$id': typeof AdminWorkspacesIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/schuzky/': typeof AuthenticatedSchuzkyIndexRoute
-  '/admin/workspaces/': typeof AdminWorkspacesIndexRoute
+  '/_authenticated/admin/workspaces/$id': typeof AuthenticatedAdminWorkspacesIdRoute
   '/_authenticated/call-party/events/$id': typeof AuthenticatedCallPartyEventsIdRoute
+  '/_authenticated/admin/workspaces/': typeof AuthenticatedAdminWorkspacesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
+    | '/admin'
     | '/call-party'
     | '/cile'
     | '/dashboard'
     | '/settings'
     | '/setup'
-    | '/admin/templates'
     | '/join/$token'
-    | '/admin/'
+    | '/admin/templates'
     | '/nastaveni/tym'
     | '/schuzky/$id'
     | '/schuzky/nova'
-    | '/admin/workspaces/$id'
+    | '/admin/'
     | '/schuzky/'
-    | '/admin/workspaces/'
+    | '/admin/workspaces/$id'
     | '/call-party/events/$id'
+    | '/admin/workspaces/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,43 +222,42 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/setup'
-    | '/admin/templates'
     | '/join/$token'
-    | '/admin'
+    | '/admin/templates'
     | '/nastaveni/tym'
     | '/schuzky/$id'
     | '/schuzky/nova'
-    | '/admin/workspaces/$id'
+    | '/admin'
     | '/schuzky'
-    | '/admin/workspaces'
+    | '/admin/workspaces/$id'
     | '/call-party/events/$id'
+    | '/admin/workspaces'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/admin'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/call-party'
     | '/_authenticated/cile'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/_authenticated/setup'
-    | '/admin/templates'
     | '/join/$token'
-    | '/admin/'
+    | '/_authenticated/admin/templates'
     | '/_authenticated/nastaveni/tym'
     | '/_authenticated/schuzky/$id'
     | '/_authenticated/schuzky/nova'
-    | '/admin/workspaces/$id'
+    | '/_authenticated/admin/'
     | '/_authenticated/schuzky/'
-    | '/admin/workspaces/'
+    | '/_authenticated/admin/workspaces/$id'
     | '/_authenticated/call-party/events/$id'
+    | '/_authenticated/admin/workspaces/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   JoinTokenRoute: typeof JoinTokenRoute
 }
@@ -267,13 +269,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -290,26 +285,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/join/$token': {
       id: '/join/$token'
       path: '/join/$token'
       fullPath: '/join/$token'
       preLoaderRoute: typeof JoinTokenRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/templates': {
-      id: '/admin/templates'
-      path: '/templates'
-      fullPath: '/admin/templates'
-      preLoaderRoute: typeof AdminTemplatesRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/_authenticated/setup': {
       id: '/_authenticated/setup'
@@ -346,12 +327,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCallPartyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/admin/workspaces/': {
-      id: '/admin/workspaces/'
-      path: '/workspaces'
-      fullPath: '/admin/workspaces/'
-      preLoaderRoute: typeof AdminWorkspacesIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/schuzky/': {
       id: '/_authenticated/schuzky/'
@@ -360,12 +341,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSchuzkyIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/admin/workspaces/$id': {
-      id: '/admin/workspaces/$id'
-      path: '/workspaces/$id'
-      fullPath: '/admin/workspaces/$id'
-      preLoaderRoute: typeof AdminWorkspacesIdRouteImport
-      parentRoute: typeof AdminRoute
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/schuzky/nova': {
       id: '/_authenticated/schuzky/nova'
@@ -388,6 +369,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNastaveniTymRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/templates': {
+      id: '/_authenticated/admin/templates'
+      path: '/templates'
+      fullPath: '/admin/templates'
+      preLoaderRoute: typeof AuthenticatedAdminTemplatesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/workspaces/': {
+      id: '/_authenticated/admin/workspaces/'
+      path: '/workspaces'
+      fullPath: '/admin/workspaces/'
+      preLoaderRoute: typeof AuthenticatedAdminWorkspacesIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/call-party/events/$id': {
       id: '/_authenticated/call-party/events/$id'
       path: '/events/$id'
@@ -395,8 +390,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCallPartyEventsIdRouteImport
       parentRoute: typeof AuthenticatedCallPartyRoute
     }
+    '/_authenticated/admin/workspaces/$id': {
+      id: '/_authenticated/admin/workspaces/$id'
+      path: '/workspaces/$id'
+      fullPath: '/admin/workspaces/$id'
+      preLoaderRoute: typeof AuthenticatedAdminWorkspacesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminTemplatesRoute: typeof AuthenticatedAdminTemplatesRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminWorkspacesIdRoute: typeof AuthenticatedAdminWorkspacesIdRoute
+  AuthenticatedAdminWorkspacesIndexRoute: typeof AuthenticatedAdminWorkspacesIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminTemplatesRoute: AuthenticatedAdminTemplatesRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminWorkspacesIdRoute: AuthenticatedAdminWorkspacesIdRoute,
+  AuthenticatedAdminWorkspacesIndexRoute:
+    AuthenticatedAdminWorkspacesIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedCallPartyRouteChildren {
   AuthenticatedCallPartyEventsIdRoute: typeof AuthenticatedCallPartyEventsIdRoute
@@ -413,6 +433,7 @@ const AuthenticatedCallPartyRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedCallPartyRoute: typeof AuthenticatedCallPartyRouteWithChildren
   AuthenticatedCileRoute: typeof AuthenticatedCileRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -425,6 +446,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedCallPartyRoute: AuthenticatedCallPartyRouteWithChildren,
   AuthenticatedCileRoute: AuthenticatedCileRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
@@ -440,26 +462,9 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
-interface AdminRouteChildren {
-  AdminTemplatesRoute: typeof AdminTemplatesRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminWorkspacesIdRoute: typeof AdminWorkspacesIdRoute
-  AdminWorkspacesIndexRoute: typeof AdminWorkspacesIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminTemplatesRoute: AdminTemplatesRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminWorkspacesIdRoute: AdminWorkspacesIdRoute,
-  AdminWorkspacesIndexRoute: AdminWorkspacesIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   JoinTokenRoute: JoinTokenRoute,
 }
